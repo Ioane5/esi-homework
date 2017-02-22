@@ -1,6 +1,6 @@
 package com.example.repositories;
 
-import com.example.dtoreports.PlantEntryCount;
+import com.example.dto.PlantInventoryEntryCount;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -10,5 +10,5 @@ import java.util.List;
  */
 public interface CustomInventoryRepository {
 
-    List<PlantEntryCount> findAvailablePlants(String name, LocalDate startDate, LocalDate endDate);
+    List<PlantInventoryEntryCount> findAvailablePlants(String name, LocalDate startDate, LocalDate endDate);
 }

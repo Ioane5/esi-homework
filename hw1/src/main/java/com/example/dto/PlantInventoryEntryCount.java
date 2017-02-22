@@ -1,4 +1,4 @@
-package com.example.dtoreports;
+package com.example.dto;
 
 import com.example.models.PlantInventoryEntry;
 import lombok.AllArgsConstructor;
@@ -11,8 +11,8 @@ import lombok.ToString;
 @Data
 @AllArgsConstructor
 @ToString
-public class PlantEntryCount {
+public class PlantInventoryEntryCount {
 
     PlantInventoryEntry item;
-    long count;
+    Long count;
 }
