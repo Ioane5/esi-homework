@@ -2,6 +2,7 @@ package com.example.models;
 
 import com.example.MainApplication;
 import com.example.repositories.InventoryRepository;
+import com.example.repositories.MaintenanceRepository;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,31 +12,26 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Created by ioane5 on 2/20/17.
+ * Created by vkop on 22-Feb-17.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = MainApplication.class)
-@Sql(scripts = "plants-dataset.sql")
+@Sql(scripts = "maintenance-dataset.sql")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class InventoryRepositoryTest {
+public class MaintenanceRepositoryTests {
 
     @Autowired
-    InventoryRepository inventoryRepo;
+    MaintenanceRepository maintenanceRepo;
+
 
     @Test
-    public void checkTests() {
-        assertThat(true).isTrue();
-    }
-
-    @Test
-    @Ignore
-    public void findAvailableTest() {
-        assertThat(inventoryRepo.findAvailablePlants("Mini excavator", LocalDate.MIN, LocalDate.MAX)).hasSize(2);
+    public void shouldCountCorrectiveRepairsPerYear() {
+        assertThat(maintenanceRepo.findNumberOfCorrectiveRepairs()).hasSize(3);
     }
 }
-

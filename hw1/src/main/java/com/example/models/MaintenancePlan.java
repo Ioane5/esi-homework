@@ -18,7 +18,7 @@ public class MaintenancePlan {
 
     Integer yearOfAction;
 
-    @OneToMany
+    @OneToMany(mappedBy = "plan")
     List<MaintenanceTask> tasks;
 
     @ManyToOne
