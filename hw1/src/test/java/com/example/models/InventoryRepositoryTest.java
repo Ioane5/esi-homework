@@ -33,7 +33,7 @@ public class InventoryRepositoryTest {
 
     @Test
     public void findAvailableTest() {
-        assertThat(inventoryRepo.findAvailablePlants("Mini excavator", LocalDate.of(1990, 1, 1), LocalDate.of(2018, 1, 1))).hasSize(0);
+        assertThat(inventoryRepo.findAvailablePlants("excavator", LocalDate.of(2017, 1, 1), LocalDate.of(2018, 1, 1))).hasSize(3);
     }
 }
 

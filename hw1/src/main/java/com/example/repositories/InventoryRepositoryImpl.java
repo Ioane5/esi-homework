@@ -18,8 +18,9 @@ public class InventoryRepositoryImpl implements CustomInventoryRepository {
     public List findAvailablePlants(String name, LocalDate startDate, LocalDate endDate) {
         System.out.println("findAvailablePlants() called with: name = [" + name + "], startDate = [" + startDate + "], endDate = [" + endDate + "]");
         List<PlantInventoryItem> minus =
-                em.createQuery("select p from PlantReservation pr join pr.plant p " +
-                                "where not(pr.schedule.startDate > ?2 or pr.schedule.endDate < ?1) "
+                em.createQuery("select pi from PlantInventoryItem pi  where pi not in" +
+                                "(select pr.plant from PlantReservation pr " +
+                                "where not(pr.schedule.startDate > ?2 or pr.schedule.endDate < ?1) group by pr.plant)"
                         , PlantInventoryItem.class)
                         .setParameter(1, startDate)
                         .setParameter(2, endDate)
@@ -31,11 +32,16 @@ public class InventoryRepositoryImpl implements CustomInventoryRepository {
         System.out.println("Selected ");
 
         List<Object[]> selected =
-                em.createQuery("select pe, count(p) from PlantInventoryItem p join p.plantInfo pe " +
-                        "where p.equipmentCondition = 'SERVICEABLE' " +
-                        "and LOWER(pe.name) like lower(?1) " +
+                em.createQuery("select pe, count(p) " +
+                        "from PlantInventoryItem p join p.plantInfo pe where p not in " +
+                        "(select pr.plant from PlantReservation pr " +
+                        "where not(pr.schedule.startDate > ?2 or pr.schedule.endDate < ?1) group by pr.plant) " +
+                        "and p.equipmentCondition = 'SERVICEABLE' " +
+                        "and LOWER(pe.name) like lower(?3) " +
                         "group by pe", Object[].class)
-                        .setParameter(1, name)
+                        .setParameter(1, startDate)
+                        .setParameter(2, endDate)
+                        .setParameter(3, "%" + name + "%")
                         .getResultList();
         selected.forEach((i) -> {
             System.out.println(i[0]);
