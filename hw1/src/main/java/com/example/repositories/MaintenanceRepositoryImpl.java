@@ -1,5 +1,6 @@
 package com.example.repositories;
 
+import com.example.dto.CorrectiveRepairCostYearlyRecord;
 import com.example.dto.CorrectiveRepairCountYearlyRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -15,12 +16,24 @@ public class MaintenanceRepositoryImpl implements CustomMaintenanceRepository {
     EntityManager em;
 
     @Override
-    public List<CorrectiveRepairCountYearlyRecord> findNumberOfCorrectiveRepairs() {
+    public List<CorrectiveRepairCountYearlyRecord> findNumberOfCorrectiveRepairsByYear() {
         List<CorrectiveRepairCountYearlyRecord> list =
                 em.createQuery("select new com.example.dto.CorrectiveRepairCountYearlyRecord(mp.yearOfAction, count(t)) " +
-                        "from MaintenancePlan mp JOIN mp.tasks t where t.typeOfWork = 'CORRECTIVE' " +
+                        "from MaintenancePlan mp LEFT JOIN mp.tasks t where t.typeOfWork = 'CORRECTIVE' " +
                         "GROUP BY mp.yearOfAction " +
                         "ORDER BY mp.yearOfAction DESC ", CorrectiveRepairCountYearlyRecord.class)
+                        .setMaxResults(5)
+                        .getResultList();
+        return list;
+    }
+
+    @Override
+    public List<CorrectiveRepairCostYearlyRecord> findCostOfCorrectiveRepairsByYear() {
+        List<CorrectiveRepairCostYearlyRecord> list =
+                em.createQuery("select new com.example.dto.CorrectiveRepairCostYearlyRecord(mp.yearOfAction, SUM(t.price)) " +
+                        "from MaintenancePlan mp LEFT JOIN mp.tasks t where t.typeOfWork = 'CORRECTIVE' " +
+                        "GROUP BY mp.yearOfAction " +
+                        "ORDER BY mp.yearOfAction DESC ", CorrectiveRepairCostYearlyRecord.class)
                         .setMaxResults(5)
                         .getResultList();
         return list;
