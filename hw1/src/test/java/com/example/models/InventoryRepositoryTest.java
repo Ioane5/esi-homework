@@ -1,6 +1,6 @@
 package com.example.models;
 
-import com.example.PracticalApplication;
+import com.example.MainApplication;
 import com.example.repositories.InventoryRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Created by ioane5 on 2/20/17.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = PracticalApplication.class)
+@SpringBootTest(classes = MainApplication.class)
 @Sql(scripts = "/plants-dataset.sql")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class InventoryRepositoryTest {
@@ -26,6 +26,10 @@ public class InventoryRepositoryTest {
     @Autowired
     InventoryRepository inventoryRepo;
 
+    @Test
+    public void checkTests() {
+        assertThat(true).isTrue();
+    }
 
     @Test
     public void findAvailableTest() {
