@@ -3,10 +3,10 @@ package com.example.repositories;
 import com.example.dto.PlantInventoryEntryCount;
 import com.example.models.BusinessPeriod;
 import com.example.models.PlantInventoryItem;
+import com.example.models.BusinessPeriod;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityManager;
-import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -17,7 +17,7 @@ public class InventoryRepositoryImpl implements CustomInventoryRepository {
     @Autowired
     EntityManager em;
 
-    public List<PlantInventoryEntryCount> findAvailablePlants(String name, LocalDate startDate, LocalDate endDate) {
+    public List<PlantInventoryEntryCount> findAvailablePlants(String name, BusinessPeriod period) {
         return em.createQuery("select new com.example.dto.PlantInventoryEntryCount(pe, count(p)) " +
                 "from PlantInventoryItem p join p.plantInfo pe where p not in " +
                 // where plant is not in (busy plant items).
@@ -26,8 +26,8 @@ public class InventoryRepositoryImpl implements CustomInventoryRepository {
                 "and p.equipmentCondition = 'SERVICEABLE' " +
                 "and LOWER(pe.name) like lower(?3) " +
                 "group by pe", PlantInventoryEntryCount.class)
-                .setParameter(1, startDate)
-                .setParameter(2, endDate)
+                .setParameter(1, period.getStartDate())
+                .setParameter(2, period.getEndDate())
                 .setParameter(3, "%" + name + "%")
                 .getResultList();
     }

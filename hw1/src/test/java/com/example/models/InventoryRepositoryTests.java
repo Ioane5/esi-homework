@@ -37,25 +37,29 @@ public class InventoryRepositoryTests {
 
     @Test
     public void findAvailableTest_SelectExcavators() {
-        assertThat(inventoryRepo.findAvailablePlants("excavator", LocalDate.of(2017, 1, 1), LocalDate.of(2018, 1, 1)))
+        BusinessPeriod period = BusinessPeriod.of(LocalDate.of(2017, 1, 1), LocalDate.of(2018, 1, 1));
+        assertThat(inventoryRepo.findAvailablePlants("excavator", period))
                 .hasSize(3);
     }
 
     @Test
     public void findAvailableTest_SelectEveryWorkingItem() {
-        assertThat(inventoryRepo.findAvailablePlants("", LocalDate.MAX, LocalDate.MAX))
+        BusinessPeriod period = BusinessPeriod.of(LocalDate.MAX, LocalDate.MAX);
+        assertThat(inventoryRepo.findAvailablePlants("", period))
                 .hasSize(5);
     }
 
     @Test
     public void findAvailableTest_SelectEveryWorkingAndUnusedEntry() {
-        assertThat(inventoryRepo.findAvailablePlants("", LocalDate.of(1980, 1, 1), LocalDate.of(2480, 1, 1)))
+        BusinessPeriod period = BusinessPeriod.of(LocalDate.of(1980, 1, 1), LocalDate.of(2480, 1, 1));
+        assertThat(inventoryRepo.findAvailablePlants("", period))
                 .hasSize(4);
     }
 
     @Test
     public void findAvailableTest_SelectAllWorkingDumpers() {
-        assertThat(inventoryRepo.findAvailablePlants("dumper", LocalDate.of(2017, 6, 1), LocalDate.of(2017, 9, 1)))
+        BusinessPeriod period = BusinessPeriod.of(LocalDate.of(2017, 6, 1), LocalDate.of(2017, 9, 1));
+        assertThat(inventoryRepo.findAvailablePlants("dumper", period))
                 .hasSize(2);
     }
 

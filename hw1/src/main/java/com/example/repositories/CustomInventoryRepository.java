@@ -3,9 +3,8 @@ package com.example.repositories;
 import com.example.models.BusinessPeriod;
 import com.example.models.PlantInventoryItem;
 import com.example.dto.PlantInventoryEntryCount;
+import com.example.models.BusinessPeriod;
 
-
-import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -21,5 +20,5 @@ public interface CustomInventoryRepository {
      */
     List<PlantInventoryItem> findAvailablePlantsInBusinessPeriod(BusinessPeriod period);
     List<PlantInventoryItem> findPlantsNotHiredInLastSixMonths();
-    List<PlantInventoryEntryCount> findAvailablePlants(String name, LocalDate startDate, LocalDate endDate);
+    List<PlantInventoryEntryCount> findAvailablePlants(String name, BusinessPeriod period);
 }
