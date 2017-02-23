@@ -54,8 +54,8 @@ public class InventoryRepositoryTest {
     public void checkItemAvailabilityStrictWhenNotAvailableTest(){
         PlantInventoryEntry pe = new PlantInventoryEntry();
         pe.setId(3L);
-
-        boolean actual = inventoryRepo.itemAvailableStrict(pe, LocalDate.of(2009, 3, 22), LocalDate.of(2009, 3, 23));
+        BusinessPeriod period = BusinessPeriod.of(LocalDate.of(2009, 3, 22), LocalDate.of(2009, 3, 23));
+        boolean actual = inventoryRepo.itemAvailableStrict(pe, period);
         assertThat(actual).isEqualTo(false);
     }
 
@@ -63,8 +63,8 @@ public class InventoryRepositoryTest {
     public void checkItemAvailabilityStrictWhenAvailableTest(){
         PlantInventoryEntry pe = new PlantInventoryEntry();
         pe.setId(3L);
-
-        boolean actual = inventoryRepo.itemAvailableStrict(pe, LocalDate.of(2008, 3, 22), LocalDate.of(2008, 3, 23));
+        BusinessPeriod period = BusinessPeriod.of(LocalDate.of(2008, 3, 22), LocalDate.of(2008, 3, 23));
+        boolean actual = inventoryRepo.itemAvailableStrict(pe, period);
         assertThat(actual).isEqualTo(true);
     }
 }
