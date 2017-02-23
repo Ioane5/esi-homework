@@ -40,9 +40,27 @@ public class InventoryRepositoryImpl implements CustomInventoryRepository {
                 "(select pr.plant from PlantReservation pr " +
                 "where not(pr.schedule.startDate > ?2 or pr.schedule.endDate < ?1) group by pr.plant) " +
                 "and p.equipmentCondition = 'SERVICEABLE' " +
-                "and p.plantInfo.id = ?3", Long.class).setParameter(1, period.getStartDate())
+                "and p.plantInfo = ?3", Long.class).setParameter(1, period.getStartDate())
                 .setParameter(2, period.getEndDate())
-                .setParameter(3, entry.getId())
+                .setParameter(3, entry)
+                .getSingleResult() > 0;
+    }
+
+    @Override
+    public boolean itemAvailableRelaxed(PlantInventoryEntry entry, BusinessPeriod period) {
+        return this.itemAvailableStrict(entry, period) ||
+                (period.getStartDate().isAfter(LocalDate.now().plusWeeks(3)) && this.itemCheckRelaxed(entry, period));
+    }
+
+    private boolean itemCheckRelaxed(PlantInventoryEntry entry, BusinessPeriod period) {
+        return em.createQuery("select count(p) from " +
+                "PlantReservation pr JOIN pr.plant p " +
+                "WHERE pr.maintenancePlan is not null " +
+                "AND p.plantInfo = ?1 " +
+                "AND pr.schedule.startDate > current_date " +
+                "AND pr.schedule.endDate < ?2", Long.class)
+                .setParameter(1, entry)
+                .setParameter(2, period.getEndDate().minusWeeks(1))
                 .getSingleResult() > 0;
     }
 }
