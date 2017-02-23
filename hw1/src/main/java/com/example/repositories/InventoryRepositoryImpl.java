@@ -54,10 +54,10 @@ public class InventoryRepositoryImpl implements CustomInventoryRepository {
     }
 
     private boolean itemCheckRelaxed(PlantInventoryEntry entry, BusinessPeriod period) {
-        return em.createQuery("select count(p) from " +
-                "PlantReservation pr JOIN pr.plant p " +
+        return em.createQuery("select count(pr.plant) from " +
+                "PlantReservation pr " +
                 "WHERE pr.maintenancePlan is not null " +
-                "AND p.plantInfo = ?1 " +
+                "AND pr.plant.plantInfo = ?1 " +
                 "AND pr.schedule.startDate > current_date " +
                 "AND pr.schedule.endDate < ?2", Long.class)
                 .setParameter(1, entry)
