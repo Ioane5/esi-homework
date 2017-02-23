@@ -29,4 +29,7 @@ public class MaintenanceTask {
 
     @OneToOne
     PlantReservation plantReservation;
+
+    @ManyToOne
+    MaintenancePlan plan;
 }
