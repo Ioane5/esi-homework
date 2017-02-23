@@ -1,6 +1,7 @@
 package com.example.repositories;
 
 import com.example.dto.PlantInventoryEntryCount;
+import com.example.models.PlantInventoryItem;
 import com.example.models.BusinessPeriod;
 import com.example.models.PlantInventoryEntry;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ public class InventoryRepositoryImpl implements CustomInventoryRepository {
     @Autowired
     EntityManager em;
 
-    public List<PlantInventoryEntryCount> findAvailablePlants(String name, LocalDate startDate, LocalDate endDate) {
+    public List<PlantInventoryEntryCount> findAvailablePlants(String name, BusinessPeriod period) {
         return em.createQuery("select new com.example.dto.PlantInventoryEntryCount(pe, count(p)) " +
                 "from PlantInventoryItem p join p.plantInfo pe where p not in " +
                 // where plant is not in (busy plant items).
@@ -26,8 +27,8 @@ public class InventoryRepositoryImpl implements CustomInventoryRepository {
                 "and p.equipmentCondition = 'SERVICEABLE' " +
                 "and LOWER(pe.name) like lower(?3) " +
                 "group by pe", PlantInventoryEntryCount.class)
-                .setParameter(1, startDate)
-                .setParameter(2, endDate)
+                .setParameter(1, period.getStartDate())
+                .setParameter(2, period.getEndDate())
                 .setParameter(3, "%" + name + "%")
                 .getResultList();
     }
@@ -62,5 +63,24 @@ public class InventoryRepositoryImpl implements CustomInventoryRepository {
                 .setParameter(1, entry)
                 .setParameter(2, period.getEndDate().minusWeeks(1))
                 .getSingleResult() > 0;
+    }
+
+    @Override
+    public List<PlantInventoryItem> findAvailablePlantsInBusinessPeriod(BusinessPeriod period) {
+        //noinspection unchecked
+        return em.createQuery(
+                        "select p from PlantInventoryItem p where p not in (" +
+                            "select r.plant from PlantReservation r " +
+                                "where r.schedule.startDate > ?1 and r.schedule.startDate < ?2 and r.rental IS NOT NULL)")
+                        .setParameter(1, period.getStartDate())
+                        .setParameter(2, period.getEndDate())
+                        .getResultList();
+
+    }
+
+    @Override
+    public List<PlantInventoryItem> findPlantsNotHiredInLastSixMonths() {
+        BusinessPeriod period = BusinessPeriod.of(LocalDate.now().minusMonths(6), LocalDate.now());
+        return findAvailablePlantsInBusinessPeriod(period);
     }
 }

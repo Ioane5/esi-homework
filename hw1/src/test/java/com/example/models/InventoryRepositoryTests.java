@@ -2,6 +2,9 @@ package com.example.models;
 
 import com.example.MainApplication;
 import com.example.repositories.InventoryRepository;
+import com.example.repositories.PlantInventoryItemRepository;
+import com.example.repositories.PlantReservationRepository;
+import com.example.repositories.PurchaseOrderRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,31 +25,41 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Sql(scripts = "plants-dataset.sql")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class InventoryRepositoryTests {
-
     @Autowired
-    InventoryRepository inventoryRepo;
+    private InventoryRepository inventoryRepo;
+    @Autowired
+    private PurchaseOrderRepository purchaseOrderRepo;
+    @Autowired
+    private PlantReservationRepository plantReservationRepo;
+    @Autowired
+    private PlantInventoryItemRepository plantInventoryItemRepo;
+
 
     @Test
     public void findAvailableTest_SelectExcavators() {
-        assertThat(inventoryRepo.findAvailablePlants("excavator", LocalDate.of(2017, 1, 1), LocalDate.of(2018, 1, 1)))
+        BusinessPeriod period = BusinessPeriod.of(LocalDate.of(2017, 1, 1), LocalDate.of(2018, 1, 1));
+        assertThat(inventoryRepo.findAvailablePlants("excavator", period))
                 .hasSize(3);
     }
 
     @Test
     public void findAvailableTest_SelectEveryWorkingItem() {
-        assertThat(inventoryRepo.findAvailablePlants("", LocalDate.MAX, LocalDate.MAX))
+        BusinessPeriod period = BusinessPeriod.of(LocalDate.MAX, LocalDate.MAX);
+        assertThat(inventoryRepo.findAvailablePlants("", period))
                 .hasSize(5);
     }
 
     @Test
     public void findAvailableTest_SelectEveryWorkingAndUnusedEntry() {
+        BusinessPeriod period = BusinessPeriod.of(LocalDate.of(1980, 1, 1), LocalDate.of(2480, 1, 1));
         assertThat(inventoryRepo.findAvailablePlants("", LocalDate.of(1980, 1, 1), LocalDate.of(2480, 1, 1)))
                 .hasSize(3);
     }
 
     @Test
     public void findAvailableTest_SelectAllWorkingDumpers() {
-        assertThat(inventoryRepo.findAvailablePlants("dumper", LocalDate.of(2017, 6, 1), LocalDate.of(2017, 9, 1)))
+        BusinessPeriod period = BusinessPeriod.of(LocalDate.of(2017, 6, 1), LocalDate.of(2017, 9, 1));
+        assertThat(inventoryRepo.findAvailablePlants("dumper", period))
                 .hasSize(2);
     }
 
@@ -89,6 +102,32 @@ public class InventoryRepositoryTests {
         BusinessPeriod period = BusinessPeriod.of(LocalDate.of(2017, 4, 15), LocalDate.of(2017, 4, 20));
         boolean actual = inventoryRepo.itemAvailableRelaxed(pe, period);
         assertThat(actual).isEqualTo(true);
+    }
+
+    @Test
+    public void findPlantsNotHiredInLastSixMonthsWithReservationinPastTest() {
+        int expectedSize = plantInventoryItemRepo.findAll().size() - 1;
+        setUpPurchase(LocalDate.now().minusMonths(3), LocalDate.now().minusMonths(2));
+        assertThat(inventoryRepo.findPlantsNotHiredInLastSixMonths())
+                .hasSize(expectedSize);
+    }
+
+    @Test
+    public void findPlantsNotHiredInLastSixMonthsWithReservationInFutureTest() {
+        int expectedSize = plantInventoryItemRepo.findAll().size();
+        setUpPurchase(LocalDate.now().plusMonths(3), LocalDate.now().plusMonths(2));
+        assertThat(inventoryRepo.findPlantsNotHiredInLastSixMonths())
+                .hasSize(expectedSize);
+    }
+
+    private void setUpPurchase(LocalDate startDate, LocalDate endDate) {
+        PurchaseOrder po = new PurchaseOrder();
+        purchaseOrderRepo.save(po);
+        PlantReservation r = new PlantReservation();
+        r.setRental(po);
+        r.setSchedule(BusinessPeriod.of(startDate, endDate));
+        r.setPlant(plantInventoryItemRepo.findOne(1L));
+        plantReservationRepo.save(r);
     }
 }
 
