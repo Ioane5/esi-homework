@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(classes = MainApplication.class)
 @Sql(scripts = "plants-dataset.sql")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class InventoryRepositoryTest {
+public class InventoryRepositoryTests {
 
     @Autowired
     InventoryRepository inventoryRepo;
@@ -45,7 +45,7 @@ public class InventoryRepositoryTest {
     }
 
     @Test
-    public void findAvailableTest_SelectAllWorkingdDumpers() {
+    public void findAvailableTest_SelectAllWorkingDumpers() {
         assertThat(inventoryRepo.findAvailablePlants("dumper", LocalDate.of(2017, 6, 1), LocalDate.of(2017, 9, 1)))
                 .hasSize(2);
     }
