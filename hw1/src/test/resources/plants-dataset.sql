@@ -16,5 +16,17 @@ insert into plant_inventory_entry (id, name, description, price) values (14, 'D-
 insert into plant_inventory_item (id, plant_info_id, serial_number, equipment_condition) values (1, 1, 'A01', 'SERVICEABLE');
 insert into plant_inventory_item (id, plant_info_id, serial_number, equipment_condition) values (2, 1, 'A02', 'SERVICEABLE');
 insert into plant_inventory_item (id, plant_info_id, serial_number, equipment_condition) values (3, 3, 'A03', 'UNSERVICEABLE_REPAIRABLE');
+insert into plant_inventory_item (id, plant_info_id, serial_number, equipment_condition) values (4, 3, 'A04', 'UNSERVICEABLE_REPAIRABLE');
+insert into plant_inventory_item (id, plant_info_id, serial_number, equipment_condition) values (5, 3, 'A05', 'UNSERVICEABLE_REPAIRABLE');
+insert into plant_inventory_item (id, plant_info_id, serial_number, equipment_condition) values (6, 3, 'A06', 'SERVICEABLE');
+insert into plant_inventory_item (id, plant_info_id, serial_number, equipment_condition) values (7, 3, 'A07', 'SERVICEABLE');
+insert into plant_inventory_item (id, plant_info_id, serial_number, equipment_condition) values (8, 7, 'A08', 'SERVICEABLE');
+insert into plant_inventory_item (id, plant_info_id, serial_number, equipment_condition) values (9, 11, 'A09', 'SERVICEABLE');
+insert into plant_inventory_item (id, plant_info_id, serial_number, equipment_condition) values (10, 11, 'A10', 'SERVICEABLE');
+insert into plant_inventory_item (id, plant_info_id, serial_number, equipment_condition) values (11, 4, 'A11', 'SERVICEABLE');
 
 insert into plant_reservation (id, plant_id, start_date, end_date) values (1, 1, '2017-03-22', '2017-03-24');
+insert into plant_reservation (id, plant_id, start_date, end_date) values (2, 2, '2015-03-22', '2016-03-24');
+insert into plant_reservation (id, plant_id, start_date, end_date) values (3, 3, '2015-03-22', '2016-03-24');
+insert into plant_reservation (id, plant_id, start_date, end_date) values (4, 4, '2010-03-22', '2020-03-24');
+insert into plant_reservation (id, plant_id, start_date, end_date) values (5, 4, '2009-03-22', '2009-03-24');
