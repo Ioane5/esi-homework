@@ -41,13 +41,31 @@ public class InventoryRepositoryTest {
     @Test
     public void findAvailableTest_SelectEveryWorkingAndUnusedEntry() {
         assertThat(inventoryRepo.findAvailablePlants("", LocalDate.of(1980, 1, 1), LocalDate.of(2480, 1, 1)))
-                .hasSize(4);
+                .hasSize(3);
     }
 
     @Test
     public void findAvailableTest_SelectAllWorkingdDumpers() {
         assertThat(inventoryRepo.findAvailablePlants("dumper", LocalDate.of(2017, 6, 1), LocalDate.of(2017, 9, 1)))
                 .hasSize(2);
+    }
+
+    @Test
+    public void checkItemAvailabilityStrictWhenNotAvailableTest(){
+        PlantInventoryEntry pe = new PlantInventoryEntry();
+        pe.setId(3L);
+
+        boolean actual = inventoryRepo.itemAvailableStrict(pe, LocalDate.of(2009, 3, 22), LocalDate.of(2009, 3, 23));
+        assertThat(actual).isEqualTo(false);
+    }
+
+    @Test
+    public void checkItemAvailabilityStrictWhenAvailableTest(){
+        PlantInventoryEntry pe = new PlantInventoryEntry();
+        pe.setId(3L);
+
+        boolean actual = inventoryRepo.itemAvailableStrict(pe, LocalDate.of(2008, 3, 22), LocalDate.of(2008, 3, 23));
+        assertThat(actual).isEqualTo(true);
     }
 }
 

@@ -30,3 +30,5 @@ insert into plant_reservation (id, plant_id, start_date, end_date) values (2, 2,
 insert into plant_reservation (id, plant_id, start_date, end_date) values (3, 3, '2015-03-22', '2016-03-24');
 insert into plant_reservation (id, plant_id, start_date, end_date) values (4, 4, '2010-03-22', '2020-03-24');
 insert into plant_reservation (id, plant_id, start_date, end_date) values (5, 4, '2009-03-22', '2009-03-24');
+insert into plant_reservation (id, plant_id, start_date, end_date) values (6, 6, '2009-03-22', '2009-03-24');
+insert into plant_reservation (id, plant_id, start_date, end_date) values (7, 7, '2009-03-22', '2009-03-24');
