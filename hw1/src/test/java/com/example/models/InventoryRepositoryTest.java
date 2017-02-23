@@ -2,7 +2,6 @@ package com.example.models;
 
 import com.example.MainApplication;
 import com.example.repositories.InventoryRepository;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,14 +27,27 @@ public class InventoryRepositoryTest {
     InventoryRepository inventoryRepo;
 
     @Test
-    public void checkTests() {
-        assertThat(true).isTrue();
+    public void findAvailableTest_SelectExcavators() {
+        assertThat(inventoryRepo.findAvailablePlants("excavator", LocalDate.of(2017, 1, 1), LocalDate.of(2018, 1, 1)))
+                .hasSize(3);
     }
 
     @Test
-    @Ignore
-    public void findAvailableTest() {
-        assertThat(inventoryRepo.findAvailablePlants("Mini excavator", LocalDate.MIN, LocalDate.MAX)).hasSize(2);
+    public void findAvailableTest_SelectEveryWorkingItem() {
+        assertThat(inventoryRepo.findAvailablePlants("", LocalDate.MAX, LocalDate.MAX))
+                .hasSize(5);
+    }
+
+    @Test
+    public void findAvailableTest_SelectEveryWorkingAndUnusedEntry() {
+        assertThat(inventoryRepo.findAvailablePlants("", LocalDate.of(1980, 1, 1), LocalDate.of(2480, 1, 1)))
+                .hasSize(4);
+    }
+
+    @Test
+    public void findAvailableTest_SelectAllWorkingdDumpers() {
+        assertThat(inventoryRepo.findAvailablePlants("dumper", LocalDate.of(2017, 6, 1), LocalDate.of(2017, 9, 1)))
+                .hasSize(2);
     }
 }
 
