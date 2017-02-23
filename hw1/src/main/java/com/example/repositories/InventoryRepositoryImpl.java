@@ -3,10 +3,10 @@ package com.example.repositories;
 import com.example.dto.PlantInventoryEntryCount;
 import com.example.models.BusinessPeriod;
 import com.example.models.PlantInventoryItem;
-import com.example.models.BusinessPeriod;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityManager;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
