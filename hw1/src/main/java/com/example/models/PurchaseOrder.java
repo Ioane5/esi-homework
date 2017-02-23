@@ -17,8 +17,9 @@ public class PurchaseOrder {
     @GeneratedValue
     Long id;
 
-    @OneToMany
+    @OneToMany(mappedBy = "rental")
     List<PlantReservation> reservations;
+
     @ManyToOne
     PlantInventoryEntry plant;
 

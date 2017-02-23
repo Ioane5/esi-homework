@@ -22,9 +22,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = MainApplication.class)
-@Sql(scripts = "/plants-dataset.sql")
+@Sql(scripts = "plants-dataset.sql")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class InventoryRepositoryTest {
+public class InventoryRepositoryTests {
     @Autowired
     private InventoryRepository inventoryRepo;
     @Autowired
@@ -34,14 +34,29 @@ public class InventoryRepositoryTest {
     @Autowired
     private PlantInventoryItemRepository plantInventoryItemRepo;
 
+
     @Test
-    public void checkTests() {
-        assertThat(true).isTrue();
+    public void findAvailableTest_SelectExcavators() {
+        assertThat(inventoryRepo.findAvailablePlants("excavator", LocalDate.of(2017, 1, 1), LocalDate.of(2018, 1, 1)))
+                .hasSize(3);
     }
 
     @Test
-    public void findAvailableTest() {
-        assertThat(inventoryRepo.findAvailablePlants("Mini excavator", LocalDate.MIN, LocalDate.MAX)).hasSize(2);
+    public void findAvailableTest_SelectEveryWorkingItem() {
+        assertThat(inventoryRepo.findAvailablePlants("", LocalDate.MAX, LocalDate.MAX))
+                .hasSize(5);
+    }
+
+    @Test
+    public void findAvailableTest_SelectEveryWorkingAndUnusedEntry() {
+        assertThat(inventoryRepo.findAvailablePlants("", LocalDate.of(1980, 1, 1), LocalDate.of(2480, 1, 1)))
+                .hasSize(4);
+    }
+
+    @Test
+    public void findAvailableTest_SelectAllWorkingDumpers() {
+        assertThat(inventoryRepo.findAvailablePlants("dumper", LocalDate.of(2017, 6, 1), LocalDate.of(2017, 9, 1)))
+                .hasSize(2);
     }
 
     @Test
