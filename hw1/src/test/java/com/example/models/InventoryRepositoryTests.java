@@ -53,7 +53,7 @@ public class InventoryRepositoryTests {
     public void findAvailableTest_SelectEveryWorkingAndUnusedEntry() {
         BusinessPeriod period = BusinessPeriod.of(LocalDate.of(1980, 1, 1), LocalDate.of(2480, 1, 1));
         assertThat(inventoryRepo.findAvailablePlants("", period))
-                .hasSize(4);
+                .hasSize(3);
     }
 
     @Test
@@ -61,6 +61,47 @@ public class InventoryRepositoryTests {
         BusinessPeriod period = BusinessPeriod.of(LocalDate.of(2017, 6, 1), LocalDate.of(2017, 9, 1));
         assertThat(inventoryRepo.findAvailablePlants("dumper", period))
                 .hasSize(2);
+    }
+
+    @Test
+    public void checkItemAvailabilityStrictWhenNotAvailableTest() {
+        PlantInventoryEntry pe = inventoryRepo.findOne(3L);
+        BusinessPeriod period = BusinessPeriod.of(LocalDate.of(2009, 3, 22), LocalDate.of(2009, 3, 23));
+        boolean actual = inventoryRepo.itemAvailableStrict(pe, period);
+        assertThat(actual).isEqualTo(false);
+    }
+
+    @Test
+    public void checkItemAvailabilityStrictWhenAvailableTest() {
+        PlantInventoryEntry pe = inventoryRepo.findOne(3L);
+        BusinessPeriod period = BusinessPeriod.of(LocalDate.of(2008, 3, 22), LocalDate.of(2008, 3, 23));
+        boolean actual = inventoryRepo.itemAvailableStrict(pe, period);
+        assertThat(actual).isEqualTo(true);
+    }
+
+    @Test
+    public void checkItemAvailabilityRelaxedWhenNearFuture() {
+        PlantInventoryEntry pe = inventoryRepo.findOne(5L);
+        BusinessPeriod period = BusinessPeriod.of(LocalDate.of(2017, 3, 3), LocalDate.of(2017, 3, 5));
+        boolean actual = inventoryRepo.itemAvailableRelaxed(pe, period);
+        assertThat(actual).isEqualTo(false);
+    }
+
+
+    @Test
+    public void checkItemAvailabilityRelaxedWhenNotAvailableTest() {
+        PlantInventoryEntry pe = inventoryRepo.findOne(6L);
+        BusinessPeriod period = BusinessPeriod.of(LocalDate.of(2017, 4, 3), LocalDate.of(2017, 4, 5));
+        boolean actual = inventoryRepo.itemAvailableRelaxed(pe, period);
+        assertThat(actual).isEqualTo(false);
+    }
+
+    @Test
+    public void checkItemAvailabilityRelaxedWhenAvailableTest() {
+        PlantInventoryEntry pe = inventoryRepo.findOne(6L);
+        BusinessPeriod period = BusinessPeriod.of(LocalDate.of(2017, 4, 15), LocalDate.of(2017, 4, 20));
+        boolean actual = inventoryRepo.itemAvailableRelaxed(pe, period);
+        assertThat(actual).isEqualTo(true);
     }
 
     @Test
