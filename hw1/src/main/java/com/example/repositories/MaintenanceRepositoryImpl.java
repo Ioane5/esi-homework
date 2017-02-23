@@ -17,25 +17,21 @@ public class MaintenanceRepositoryImpl implements CustomMaintenanceRepository {
 
     @Override
     public List<CorrectiveRepairCountYearlyRecord> findNumberOfCorrectiveRepairsByYear() {
-        List<CorrectiveRepairCountYearlyRecord> list =
-                em.createQuery("select new com.example.dto.CorrectiveRepairCountYearlyRecord(mp.yearOfAction, count(t)) " +
-                        "from MaintenancePlan mp LEFT JOIN mp.tasks t where t.typeOfWork = 'CORRECTIVE' " +
-                        "GROUP BY mp.yearOfAction " +
-                        "ORDER BY mp.yearOfAction DESC ", CorrectiveRepairCountYearlyRecord.class)
-                        .setMaxResults(5)
-                        .getResultList();
-        return list;
+        return em.createQuery("select new com.example.dto.CorrectiveRepairCountYearlyRecord(mp.yearOfAction, count(t)) " +
+                "from MaintenancePlan mp LEFT JOIN mp.tasks t where t.typeOfWork = 'CORRECTIVE' " +
+                "GROUP BY mp.yearOfAction " +
+                "ORDER BY mp.yearOfAction DESC ", CorrectiveRepairCountYearlyRecord.class)
+                .setMaxResults(5)
+                .getResultList();
     }
 
     @Override
     public List<CorrectiveRepairCostYearlyRecord> findCostOfCorrectiveRepairsByYear() {
-        List<CorrectiveRepairCostYearlyRecord> list =
-                em.createQuery("select new com.example.dto.CorrectiveRepairCostYearlyRecord(mp.yearOfAction, SUM(t.price)) " +
-                        "from MaintenancePlan mp LEFT JOIN mp.tasks t where t.typeOfWork = 'CORRECTIVE' " +
-                        "GROUP BY mp.yearOfAction " +
-                        "ORDER BY mp.yearOfAction DESC ", CorrectiveRepairCostYearlyRecord.class)
-                        .setMaxResults(5)
-                        .getResultList();
-        return list;
+        return em.createQuery("select new com.example.dto.CorrectiveRepairCostYearlyRecord(mp.yearOfAction, SUM(t.price)) " +
+                "from MaintenancePlan mp LEFT JOIN mp.tasks t where t.typeOfWork = 'CORRECTIVE' " +
+                "GROUP BY mp.yearOfAction " +
+                "ORDER BY mp.yearOfAction DESC ", CorrectiveRepairCostYearlyRecord.class)
+                .setMaxResults(5)
+                .getResultList();
     }
 }
