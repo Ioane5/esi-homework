@@ -52,7 +52,7 @@ public class InventoryRepositoryTests {
     @Test
     public void findAvailableTest_SelectEveryWorkingAndUnusedEntry() {
         BusinessPeriod period = BusinessPeriod.of(LocalDate.of(1980, 1, 1), LocalDate.of(2480, 1, 1));
-        assertThat(inventoryRepo.findAvailablePlants("", LocalDate.of(1980, 1, 1), LocalDate.of(2480, 1, 1)))
+        assertThat(inventoryRepo.findAvailablePlants("", period))
                 .hasSize(3);
     }
 
