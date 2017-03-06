@@ -1,22 +1,17 @@
 package com.example.inventory.domain.model;
 
 import com.example.common.domain.model.BusinessPeriod;
-import com.example.inventory.domain.model.PlantInventoryItem;
 import com.example.maintenance.domain.model.MaintenancePlan;
 import com.example.sales.domain.model.PurchaseOrder;
 import lombok.Data;
 
 import javax.persistence.*;
 
-/**
- * Created by ioane5 on 2/20/17.
- */
 @Entity
 @Data
 public class PlantReservation {
     @Id
-    @GeneratedValue
-    Long id;
+    String id;
 
     @Embedded
     BusinessPeriod schedule;

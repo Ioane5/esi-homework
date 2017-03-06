@@ -2,6 +2,7 @@ package com.example.inventory.domain.repository;
 
 import com.example.MainApplication;
 import com.example.common.domain.model.BusinessPeriod;
+import com.example.common.infrastructure.IdentifierFactory;
 import com.example.inventory.domain.model.PlantInventoryEntry;
 import com.example.inventory.domain.model.PlantReservation;
 import com.example.sales.domain.repository.PurchaseOrderRepository;
@@ -125,6 +126,7 @@ public class InventoryRepositoryTests {
         r.setRental(po);
         r.setSchedule(BusinessPeriod.of(startDate, endDate));
         r.setPlant(plantInventoryItemRepo.findOne("1"));
+        r.setId(IdentifierFactory.nextId());
         plantReservationRepo.save(r);
     }
 }

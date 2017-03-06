@@ -6,7 +6,7 @@ import java.util.UUID;
 
 @Service
 public class IdentifierFactory {
-    public String nextId() {
+    public static String nextId() {
         return UUID.randomUUID().toString();
     }
 }
