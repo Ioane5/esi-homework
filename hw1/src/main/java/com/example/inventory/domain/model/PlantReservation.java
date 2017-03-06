@@ -29,24 +29,22 @@ public class PlantReservation {
     @ManyToOne
     PurchaseOrder rental;
 
-    public static PlantReservation of(String id, BusinessPeriod schedule, PlantInventoryItem plant, MaintenancePlan maintenancePlan) {
+    public static PlantReservation of(String id, BusinessPeriod schedule, PlantInventoryItem plant) {
         PlantReservation r = new PlantReservation();
         r.id = id;
         r.schedule = schedule;
         r.plant = plant;
-        r.maintenancePlan = maintenancePlan;
 
         return r;
     }
 
+    public PlantReservation setMaintenance(MaintenancePlan maintenancePlan) {
+        this.maintenancePlan = maintenancePlan;
+        return this;
+    }
 
-    public static PlantReservation of(String id, BusinessPeriod schedule, PlantInventoryItem plant, PurchaseOrder rental) {
-        PlantReservation r = new PlantReservation();
-        r.id = id;
-        r.schedule = schedule;
-        r.plant = plant;
-        r.rental = rental;
-
-        return r;
+    public PlantReservation setPurchaseOrder(PurchaseOrder po) {
+        this.rental = po;
+        return this;
     }
 }
