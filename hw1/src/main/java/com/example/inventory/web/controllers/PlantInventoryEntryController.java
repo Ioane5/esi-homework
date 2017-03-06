@@ -24,7 +24,8 @@ public class PlantInventoryEntryController {
 
     @GetMapping(value = "/plants/form")
     public String form(Model model) {
-        model.addAttribute("plant", new PlantInventoryEntry());
+//        todo do we need this? fix it later
+//        model.addAttribute("plant", new PlantInventoryEntry());
         return "plants/create";
     }
 

@@ -1,14 +1,11 @@
 package com.example.inventory.domain.model;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
-@Data
+@Getter
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @AllArgsConstructor(staticName = "of")
 public class PlantInventoryItem {
