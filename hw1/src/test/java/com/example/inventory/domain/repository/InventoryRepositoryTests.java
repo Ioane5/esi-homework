@@ -124,7 +124,7 @@ public class InventoryRepositoryTests {
         PlantReservation r = new PlantReservation();
         r.setRental(po);
         r.setSchedule(BusinessPeriod.of(startDate, endDate));
-        r.setPlant(plantInventoryItemRepo.findOne(1L));
+        r.setPlant(plantInventoryItemRepo.findOne("1"));
         plantReservationRepo.save(r);
     }
 }

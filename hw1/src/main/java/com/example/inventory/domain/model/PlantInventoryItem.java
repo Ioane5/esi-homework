@@ -1,7 +1,5 @@
 package com.example.inventory.domain.model;
 
-import com.example.inventory.domain.model.EquipmentCondition;
-import com.example.inventory.domain.model.PlantInventoryEntry;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,8 +13,8 @@ import javax.persistence.*;
 @AllArgsConstructor(staticName = "of")
 public class PlantInventoryItem {
     @Id
-    @GeneratedValue
-    Long id;
+    String id;
+
     String serialNumber;
 
     @Enumerated(EnumType.STRING)

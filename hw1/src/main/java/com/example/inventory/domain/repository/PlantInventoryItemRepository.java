@@ -4,9 +4,6 @@ import com.example.inventory.domain.model.PlantInventoryItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-/**
- * Created by ioane5 on 2/20/17.
- */
 @Repository
-public interface PlantInventoryItemRepository extends JpaRepository<PlantInventoryItem, Long> {
+public interface PlantInventoryItemRepository extends JpaRepository<PlantInventoryItem, String> {
 }

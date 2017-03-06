@@ -7,11 +7,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * Created by ioane5 on 2/19/17.
- */
 @Repository
-public interface PlantInventoryEntryRepository extends JpaRepository<PlantInventoryEntry, Long> {
+public interface PlantInventoryEntryRepository extends JpaRepository<PlantInventoryEntry, String> {
     List<PlantInventoryEntry> findByNameContaining(String str);
 
     @Query("select p from PlantInventoryEntry p where LOWER(p.name) like ?1")
