@@ -2,11 +2,9 @@ package com.example.inventory.domain.repository;
 
 import com.example.MainApplication;
 import com.example.common.domain.model.BusinessPeriod;
+import com.example.common.infrastructure.IdentifierFactory;
 import com.example.inventory.domain.model.PlantInventoryEntry;
 import com.example.inventory.domain.model.PlantReservation;
-import com.example.inventory.domain.repository.InventoryRepository;
-import com.example.inventory.domain.repository.PlantInventoryItemRepository;
-import com.example.inventory.domain.repository.PlantReservationRepository;
 import com.example.sales.domain.repository.PurchaseOrderRepository;
 import com.example.sales.domain.model.PurchaseOrder;
 import org.junit.Test;
@@ -21,9 +19,6 @@ import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Created by ioane5 on 2/20/17.
- */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = MainApplication.class)
 @Sql(scripts = "plants-dataset.sql")
@@ -69,7 +64,7 @@ public class InventoryRepositoryTests {
 
     @Test
     public void checkItemAvailabilityStrictWhenNotAvailableTest() {
-        PlantInventoryEntry pe = inventoryRepo.findOne(3L);
+        PlantInventoryEntry pe = inventoryRepo.findOne("3");
         BusinessPeriod period = BusinessPeriod.of(LocalDate.of(2009, 3, 22), LocalDate.of(2009, 3, 23));
         boolean actual = inventoryRepo.itemAvailableStrict(pe, period);
         assertThat(actual).isEqualTo(false);
@@ -77,7 +72,7 @@ public class InventoryRepositoryTests {
 
     @Test
     public void checkItemAvailabilityStrictWhenAvailableTest() {
-        PlantInventoryEntry pe = inventoryRepo.findOne(3L);
+        PlantInventoryEntry pe = inventoryRepo.findOne("3");
         BusinessPeriod period = BusinessPeriod.of(LocalDate.of(2008, 3, 22), LocalDate.of(2008, 3, 23));
         boolean actual = inventoryRepo.itemAvailableStrict(pe, period);
         assertThat(actual).isEqualTo(true);
@@ -85,7 +80,7 @@ public class InventoryRepositoryTests {
 
     @Test
     public void checkItemAvailabilityRelaxedWhenNearFuture() {
-        PlantInventoryEntry pe = inventoryRepo.findOne(5L);
+        PlantInventoryEntry pe = inventoryRepo.findOne("5");
         BusinessPeriod period = BusinessPeriod.of(LocalDate.of(2017, 3, 3), LocalDate.of(2017, 3, 5));
         boolean actual = inventoryRepo.itemAvailableRelaxed(pe, period);
         assertThat(actual).isEqualTo(false);
@@ -94,7 +89,7 @@ public class InventoryRepositoryTests {
 
     @Test
     public void checkItemAvailabilityRelaxedWhenNotAvailableTest() {
-        PlantInventoryEntry pe = inventoryRepo.findOne(6L);
+        PlantInventoryEntry pe = inventoryRepo.findOne("6");
         BusinessPeriod period = BusinessPeriod.of(LocalDate.of(2017, 4, 3), LocalDate.of(2017, 4, 5));
         boolean actual = inventoryRepo.itemAvailableRelaxed(pe, period);
         assertThat(actual).isEqualTo(false);
@@ -102,7 +97,7 @@ public class InventoryRepositoryTests {
 
     @Test
     public void checkItemAvailabilityRelaxedWhenAvailableTest() {
-        PlantInventoryEntry pe = inventoryRepo.findOne(6L);
+        PlantInventoryEntry pe = inventoryRepo.findOne("6");
         BusinessPeriod period = BusinessPeriod.of(LocalDate.of(2017, 4, 15), LocalDate.of(2017, 4, 20));
         boolean actual = inventoryRepo.itemAvailableRelaxed(pe, period);
         assertThat(actual).isEqualTo(true);
@@ -126,11 +121,13 @@ public class InventoryRepositoryTests {
 
     private void setUpPurchase(LocalDate startDate, LocalDate endDate) {
         PurchaseOrder po = new PurchaseOrder();
+        po.setId(IdentifierFactory.nextId());
         purchaseOrderRepo.save(po);
         PlantReservation r = new PlantReservation();
         r.setRental(po);
         r.setSchedule(BusinessPeriod.of(startDate, endDate));
-        r.setPlant(plantInventoryItemRepo.findOne(1L));
+        r.setPlant(plantInventoryItemRepo.findOne("1"));
+        r.setId(IdentifierFactory.nextId());
         plantReservationRepo.save(r);
     }
 }
