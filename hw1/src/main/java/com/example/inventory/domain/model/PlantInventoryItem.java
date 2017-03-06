@@ -1,0 +1,21 @@
+package com.example.inventory.domain.model;
+
+import com.example.inventory.domain.model.EquipmentCondition;
+import com.example.inventory.domain.model.PlantInventoryEntry;
+import lombok.Data;
+
+import javax.persistence.*;
+
+@Entity
+@Data
+public class PlantInventoryItem {
+    @Id
+    @GeneratedValue
+    Long id;
+    String serialNumber;
+
+    @Enumerated(EnumType.STRING)
+    EquipmentCondition equipmentCondition;
+    @ManyToOne
+    PlantInventoryEntry plantInfo;
+}
