@@ -121,6 +121,7 @@ public class InventoryRepositoryTests {
 
     private void setUpPurchase(LocalDate startDate, LocalDate endDate) {
         PurchaseOrder po = new PurchaseOrder();
+        po.setId(IdentifierFactory.nextId());
         purchaseOrderRepo.save(po);
         PlantReservation r = new PlantReservation();
         r.setRental(po);
