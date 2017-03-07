@@ -47,8 +47,10 @@ public class PurchaseOrder {
         return po;
     }
 
-    public PurchaseOrder addReservationAndOpenPO(PlantReservation reservation) {
+    public PurchaseOrder addReservationAndOpenPO(PlantReservation reservation, BigDecimal totalCost) {
         this.reservation = reservation;
+        this.total = totalCost;
+        this.status = POStatus.OPEN;
         return this;
     }
 
