@@ -3,10 +3,7 @@ package com.example.sales.domain.model;
 import com.example.common.domain.model.BusinessPeriod;
 import com.example.inventory.domain.model.PlantInventoryEntry;
 import com.example.inventory.domain.model.PlantReservation;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -16,6 +13,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)
+@EqualsAndHashCode
 public class PurchaseOrder {
     @Id
     String id;

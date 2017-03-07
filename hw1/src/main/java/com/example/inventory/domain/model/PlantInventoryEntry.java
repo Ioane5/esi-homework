@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 @Getter
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @AllArgsConstructor(staticName = "of")
+@EqualsAndHashCode
 public class PlantInventoryEntry {
     @Id
     String id;

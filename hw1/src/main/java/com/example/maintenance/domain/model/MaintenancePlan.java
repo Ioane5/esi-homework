@@ -10,6 +10,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @AllArgsConstructor(staticName = "of")
+@EqualsAndHashCode
 public class MaintenancePlan {
 
     @Id

@@ -8,6 +8,7 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @AllArgsConstructor(staticName = "of")
+@EqualsAndHashCode
 public class PlantInventoryItem {
     @Id
     String id;
