@@ -26,7 +26,7 @@
                 <td th:text="${p.description}"></td>
                 <td th:text="${p.price}"></td>
                 <td>
-                <form style='float:left; padding:5px; height:0px' th:object="${po}" th:method="post" th:action="@{'/dashboard/orders'}">
+                <form style='float:left; padding:5px; height:0px' th:object="${po}" th:method="post" th:action="@{'/dashboard/sales/orders'}">
                   	<input type="hidden" name="plant.id" th:value="${p.id}"></input>
                     <input type="hidden" name="plant.name" th:value="${p.name}"></input>
                     <input type="hidden" th:field="*{rentalPeriod.startDate}"></input>
