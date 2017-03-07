@@ -120,14 +120,10 @@ public class InventoryRepositoryTests {
     }
 
     private void setUpPurchase(LocalDate startDate, LocalDate endDate) {
-        PurchaseOrder po = new PurchaseOrder();
-        po.setId(IdentifierFactory.nextId());
+        PurchaseOrder po = PurchaseOrder.of(IdentifierFactory.nextId(),null,null,null);
         purchaseOrderRepo.save(po);
-        PlantReservation r = new PlantReservation();
-        r.setRental(po);
-        r.setSchedule(BusinessPeriod.of(startDate, endDate));
-        r.setPlant(plantInventoryItemRepo.findOne("1"));
-        r.setId(IdentifierFactory.nextId());
+        PlantReservation r = PlantReservation.of(IdentifierFactory.nextId(), BusinessPeriod.of(startDate, endDate), plantInventoryItemRepo.findOne("1"))
+                .setPurchaseOrder(po);
         plantReservationRepo.save(r);
     }
 }

@@ -1,13 +1,16 @@
 package com.example.maintenance.domain.model;
 
 import com.example.inventory.domain.model.PlantInventoryItem;
-import lombok.Data;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+@AllArgsConstructor(staticName = "of")
+@EqualsAndHashCode
 public class MaintenancePlan {
 
     @Id

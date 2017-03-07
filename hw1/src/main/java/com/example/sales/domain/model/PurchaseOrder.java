@@ -3,21 +3,24 @@ package com.example.sales.domain.model;
 import com.example.common.domain.model.BusinessPeriod;
 import com.example.inventory.domain.model.PlantInventoryEntry;
 import com.example.inventory.domain.model.PlantReservation;
-import lombok.Data;
+import lombok.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)
+@EqualsAndHashCode
 public class PurchaseOrder {
     @Id
     String id;
 
-    @OneToMany(mappedBy = "rental")
-    List<PlantReservation> reservations;
+    @OneToOne
+    PlantReservation reservation;
 
     @ManyToOne
     PlantInventoryEntry plant;
@@ -32,4 +35,24 @@ public class PurchaseOrder {
 
     @Embedded
     BusinessPeriod rentalPeriod;
+
+    public static PurchaseOrder of(String id, PlantInventoryEntry plant, LocalDate issueDate, BusinessPeriod rentalPeriod) {
+        PurchaseOrder po = new PurchaseOrder();
+        po.id = id;
+        po.plant = plant;
+        po.issueDate = issueDate;
+        po.rentalPeriod = rentalPeriod;
+        po.status = POStatus.PENDING;
+
+        return po;
+    }
+
+    public PurchaseOrder addReservationAndOpenPO(PlantReservation reservation, BigDecimal totalCost) {
+        this.reservation = reservation;
+        this.total = totalCost;
+        this.status = POStatus.OPEN;
+        return this;
+    }
+
+
 }
