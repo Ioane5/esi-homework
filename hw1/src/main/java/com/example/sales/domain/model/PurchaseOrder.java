@@ -8,6 +8,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -18,8 +19,8 @@ public class PurchaseOrder {
     @Id
     String id;
 
-    @OneToMany(mappedBy = "rental")
-    List<PlantReservation> reservations;
+    @OneToOne
+    PlantReservation reservation;
 
     @ManyToOne
     PlantInventoryEntry plant;
@@ -35,16 +36,21 @@ public class PurchaseOrder {
     @Embedded
     BusinessPeriod rentalPeriod;
 
-    public static PurchaseOrder of(String id, PlantInventoryEntry plant, LocalDate issueDate, LocalDate paymentSchedule, BigDecimal total, BusinessPeriod rentalPeriod) {
+    public static PurchaseOrder of(String id, PlantInventoryEntry plant, LocalDate issueDate, BusinessPeriod rentalPeriod) {
         PurchaseOrder po = new PurchaseOrder();
         po.id = id;
         po.plant = plant;
         po.issueDate = issueDate;
-        po.paymentSchedule = paymentSchedule;
-        po.total = total;
         po.rentalPeriod = rentalPeriod;
         po.status = POStatus.PENDING;
 
         return po;
     }
+
+    public PurchaseOrder addReservationAndOpenPO(PlantReservation reservation) {
+        this.reservation = reservation;
+        return this;
+    }
+
+
 }

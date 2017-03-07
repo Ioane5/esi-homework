@@ -24,7 +24,7 @@ public class PlantReservation {
     @ManyToOne
     MaintenancePlan maintenancePlan;
 
-    @ManyToOne
+    @OneToOne
     PurchaseOrder rental;
 
     public static PlantReservation of(String id, BusinessPeriod schedule, PlantInventoryItem plant) {
