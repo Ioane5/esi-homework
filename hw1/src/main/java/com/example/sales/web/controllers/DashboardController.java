@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
@@ -26,7 +27,7 @@ public class DashboardController {
     }
 
     @PostMapping("catalog/query")
-    public String executeQuery(Model model) {
+    public String executeQuery(CatalogQueryDTO query, Model model) {
 
         return "dashboard/catalog/query-result";
     }
@@ -37,7 +38,7 @@ public class DashboardController {
         po.setPlantDescription("Description");
         po.setPlantName("Excavator");
         po.setStatus("OPEN");
-        po.setTotal("600");
+        po.setTotal(BigDecimal.valueOf(600));
         po.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.of(2017, 4, 23)));
 
         model.addAttribute("order", po);
