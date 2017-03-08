@@ -1,9 +1,9 @@
 package com.example.inventory.domain.repository;
 
-import com.example.inventory.domain.model.PlantInventoryEntryCount;
-import com.example.inventory.domain.model.PlantInventoryItem;
 import com.example.common.domain.model.BusinessPeriod;
 import com.example.inventory.domain.model.PlantInventoryEntry;
+import com.example.inventory.domain.model.PlantInventoryEntryCount;
+import com.example.inventory.domain.model.PlantInventoryItem;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityManager;
@@ -69,13 +69,26 @@ public class InventoryRepositoryImpl implements CustomInventoryRepository {
     public List<PlantInventoryItem> findAvailablePlantsInBusinessPeriod(BusinessPeriod period) {
         //noinspection unchecked
         return em.createQuery(
-                        "select p from PlantInventoryItem p where p not in (" +
-                            "select r.plant from PlantReservation r " +
-                                "where r.schedule.startDate > ?1 and r.schedule.startDate < ?2 and r.rental IS NOT NULL)")
-                        .setParameter(1, period.getStartDate())
-                        .setParameter(2, period.getEndDate())
-                        .getResultList();
+                "select p from PlantInventoryItem p where p not in (" +
+                        "select r.plant from PlantReservation r " +
+                        "where r.schedule.startDate > ?1 and r.schedule.startDate < ?2 and r.rental IS NOT NULL)")
+                .setParameter(1, period.getStartDate())
+                .setParameter(2, period.getEndDate())
+                .getResultList();
 
+    }
+
+    @Override
+    public List<PlantInventoryItem> findAvailablePlantsInBusinessPeriod(String entryId, BusinessPeriod period) {
+        //noinspection unchecked
+        return em.createQuery(
+                "select p from PlantInventoryItem p where p not in (" +
+                        "select r.plant from PlantReservation r " +
+                        "where p.plantInfo.id = ?3 and r.schedule.startDate > ?1 and r.schedule.startDate < ?2 and r.rental IS NOT NULL)")
+                .setParameter(1, period.getStartDate())
+                .setParameter(2, period.getEndDate())
+                .setParameter(3, entryId)
+                .getResultList();
     }
 
     @Override

@@ -3,13 +3,14 @@ package com.example.sales.domain.model;
 import com.example.common.domain.model.BusinessPeriod;
 import com.example.inventory.domain.model.PlantInventoryEntry;
 import com.example.inventory.domain.model.PlantReservation;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -47,12 +48,21 @@ public class PurchaseOrder {
         return po;
     }
 
-    public PurchaseOrder addReservationAndOpenPO(PlantReservation reservation, BigDecimal totalCost) {
+    public PurchaseOrder addReservationAndOpenPO(PlantReservation reservation) {
         this.reservation = reservation;
-        this.total = totalCost;
         this.status = POStatus.OPEN;
+        updateTotalCost(this.plant.getPrice());
         return this;
     }
 
+    public PurchaseOrder rejectPO() {
+        this.status = POStatus.REJECTED;
+        return this;
+    }
+
+    public void updateTotalCost(BigDecimal price) {
+        int numberOfWorkingDays = rentalPeriod.getNumberOfWorkingDays();
+        total = price.multiply(BigDecimal.valueOf(numberOfWorkingDays));
+    }
 
 }

@@ -1,9 +1,9 @@
 package com.example.inventory.domain.repository;
 
-import com.example.inventory.domain.model.PlantInventoryItem;
-import com.example.inventory.domain.model.PlantInventoryEntryCount;
 import com.example.common.domain.model.BusinessPeriod;
 import com.example.inventory.domain.model.PlantInventoryEntry;
+import com.example.inventory.domain.model.PlantInventoryEntryCount;
+import com.example.inventory.domain.model.PlantInventoryItem;
 
 import java.util.List;
 
@@ -18,6 +18,8 @@ public interface CustomInventoryRepository {
      * @return list of PlantInventoryItem
      */
     List<PlantInventoryItem> findAvailablePlantsInBusinessPeriod(BusinessPeriod period);
+
+    List<PlantInventoryItem> findAvailablePlantsInBusinessPeriod(String entryId, BusinessPeriod period);
     List<PlantInventoryItem> findPlantsNotHiredInLastSixMonths();
     List<PlantInventoryEntryCount> findAvailablePlants(String name, BusinessPeriod period);
     boolean itemAvailableStrict(PlantInventoryEntry entry, BusinessPeriod period);

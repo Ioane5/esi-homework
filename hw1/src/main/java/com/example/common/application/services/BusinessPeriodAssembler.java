@@ -13,4 +13,8 @@ public class BusinessPeriodAssembler {
 
         return dto;
     }
+
+    public BusinessPeriod fromResource(BusinessPeriodDTO dto) {
+        return BusinessPeriod.of(dto.getStartDate(), dto.getEndDate());
+    }
 }

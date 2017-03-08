@@ -16,4 +16,15 @@ import java.time.LocalDate;
 public class BusinessPeriod {
     LocalDate startDate;
     LocalDate endDate;
+
+    public int getNumberOfWorkingDays() {
+        int numberOfWorkingDays = 0;
+        for (LocalDate date = this.startDate;
+             date.isBefore(this.endDate);
+             date = date.plusDays(1)) {
+            // All the logic to compute the number of working days
+            numberOfWorkingDays++;
+        }
+        return numberOfWorkingDays;
+    }
 }
