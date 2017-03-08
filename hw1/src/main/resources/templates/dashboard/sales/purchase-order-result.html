@@ -10,11 +10,11 @@
         <div class="panel-body">
             <div class="form-horizontal" th:object="${order}">
                 <div class="col-sm-2">Plant name:</div>
-                <div class="col-sm-5" th:text="${order.plantName}"></div>
+                <div class="col-sm-5" th:text="${order.plant.name}"></div>
                 <div class="clearfix"></div>
 
                 <div class="col-sm-2">Plant description:</div>
-                <div class="col-sm-5" th:text="${order.plantDescription}"></div>
+                <div class="col-sm-5" th:text="${order.plant.description}"></div>
                 <div class="clearfix"></div>
 
                 <div class="col-sm-2">Start Date:</div>

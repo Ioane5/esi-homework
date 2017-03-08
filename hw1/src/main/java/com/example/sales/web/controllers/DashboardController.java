@@ -55,9 +55,14 @@ public class DashboardController {
 
     @PostMapping("sales/orders")
     public String createOrder(Model model) {
+        PlantInventoryEntryDTO plant = new PlantInventoryEntryDTO();
+        plant.setId("2");
+        plant.setName("Ex2");
+        plant.setDescription("Very cool ex2");
+        plant.setPrice(BigDecimal.valueOf(700));
+
         PurchaseOrderDTO po = new PurchaseOrderDTO();
-        po.setPlantDescription("Description");
-        po.setPlantName("Excavator");
+        po.setPlant(plant);
         po.setStatus("OPEN");
         po.setTotal(BigDecimal.valueOf(600));
         po.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.of(2017, 4, 23)));
