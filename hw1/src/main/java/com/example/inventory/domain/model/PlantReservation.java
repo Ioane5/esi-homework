@@ -36,12 +36,12 @@ public class PlantReservation {
         return r;
     }
 
-    public PlantReservation setMaintenance(MaintenancePlan maintenancePlan) {
+    public PlantReservation withMaintenancePlan(MaintenancePlan maintenancePlan) {
         this.maintenancePlan = maintenancePlan;
         return this;
     }
 
-    public PlantReservation setPurchaseOrder(PurchaseOrder po) {
+    public PlantReservation withPurchaseOrder(PurchaseOrder po) {
         this.rental = po;
         return this;
     }

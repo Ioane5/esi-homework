@@ -123,7 +123,7 @@ public class InventoryRepositoryTests {
         PurchaseOrder po = PurchaseOrder.of(IdentifierFactory.nextId(),null,null,null);
         purchaseOrderRepo.save(po);
         PlantReservation r = PlantReservation.of(IdentifierFactory.nextId(), BusinessPeriod.of(startDate, endDate), plantInventoryItemRepo.findOne("1"))
-                .setPurchaseOrder(po);
+                .withPurchaseOrder(po);
         plantReservationRepo.save(r);
     }
 }

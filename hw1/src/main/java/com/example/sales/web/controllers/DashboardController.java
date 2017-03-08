@@ -16,11 +16,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by vkop on 03-Mar-17.
- */
-
-
 @Controller
 @RequestMapping("/dashboard")
 public class DashboardController {
