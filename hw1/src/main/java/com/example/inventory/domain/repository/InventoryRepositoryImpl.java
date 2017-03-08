@@ -18,7 +18,7 @@ public class InventoryRepositoryImpl implements CustomInventoryRepository {
     @Autowired
     EntityManager em;
 
-    public List<PlantInventoryEntryCount> findAvailablePlants(String name, BusinessPeriod period) {
+    public List<PlantInventoryEntryCount> findAndCountAvailablePlants(String name, BusinessPeriod period) {
         return em.createQuery("select new com.example.inventory.domain.model.PlantInventoryEntryCount(pe, count(p)) " +
                 "from PlantInventoryItem p join p.plantInfo pe where p not in " +
                 // where plant is not in (busy plant items).
@@ -95,5 +95,20 @@ public class InventoryRepositoryImpl implements CustomInventoryRepository {
     public List<PlantInventoryItem> findPlantsNotHiredInLastSixMonths() {
         BusinessPeriod period = BusinessPeriod.of(LocalDate.now().minusMonths(6), LocalDate.now());
         return findAvailablePlantsInBusinessPeriod(period);
+    }
+
+    @Override
+    public List<PlantInventoryEntry> findAvailablePlants(String name, BusinessPeriod period) {
+        return em.createQuery("select pe " +
+                "from PlantInventoryItem p join p.plantInfo pe where p not in " +
+                "(select pr.plant from PlantReservation pr " +
+                "where not(pr.schedule.startDate > ?2 or pr.schedule.endDate < ?1) group by pr.plant) " +
+                "and p.equipmentCondition = com.example.inventory.domain.model.EquipmentCondition.SERVICEABLE " +
+                "and LOWER(pe.name) like lower(?3) ", PlantInventoryEntry.class)
+                .setParameter(1, period.getStartDate())
+                .setParameter(2, period.getEndDate())
+                .setParameter(3, "%" + name + "%")
+                .getResultList();
+//        return em.createQuery("select pe from PlantInventoryEntry pe", PlantInventoryEntry.class).getResultList();
     }
 }

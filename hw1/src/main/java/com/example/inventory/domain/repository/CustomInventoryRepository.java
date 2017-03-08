@@ -21,7 +21,8 @@ public interface CustomInventoryRepository {
 
     List<PlantInventoryItem> findAvailablePlantsInBusinessPeriod(String entryId, BusinessPeriod period);
     List<PlantInventoryItem> findPlantsNotHiredInLastSixMonths();
-    List<PlantInventoryEntryCount> findAvailablePlants(String name, BusinessPeriod period);
+    List<PlantInventoryEntryCount> findAndCountAvailablePlants(String name, BusinessPeriod period);
+    List<PlantInventoryEntry> findAvailablePlants(String name, BusinessPeriod period);
     boolean itemAvailableStrict(PlantInventoryEntry entry, BusinessPeriod period);
     boolean itemAvailableRelaxed(PlantInventoryEntry entry, BusinessPeriod period);
 }

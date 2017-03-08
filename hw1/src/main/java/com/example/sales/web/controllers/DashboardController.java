@@ -1,10 +1,16 @@
 package com.example.sales.web.controllers;
 
 import com.example.common.application.dto.BusinessPeriodDTO;
+import com.example.common.application.services.BusinessPeriodAssembler;
+import com.example.inventory.application.services.InventoryService;
+import com.example.inventory.application.services.PlantInventoryEntryAssembler;
 import com.example.inventory.domain.model.PlantInventoryEntry;
+import com.example.inventory.domain.repository.InventoryRepository;
 import com.example.inventory.web.dto.PlantInventoryEntryDTO;
+import com.example.sales.application.services.SalesService;
 import com.example.sales.web.dto.CatalogQueryDTO;
 import com.example.sales.web.dto.PurchaseOrderDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +25,16 @@ import java.util.List;
 @Controller
 @RequestMapping("/dashboard")
 public class DashboardController {
+
+    @Autowired
+    SalesService salesService;
+    @Autowired
+    InventoryService inventoryService;
+    @Autowired
+    BusinessPeriodAssembler businessPeriodAssembler;
+    @Autowired
+    PlantInventoryEntryAssembler plantInventoryEntryAssembler;
+
     @GetMapping("/catalog/form")
     public String getQueryForm(Model model) {
         model.addAttribute("catalogQuery", new CatalogQueryDTO());
@@ -27,23 +43,12 @@ public class DashboardController {
 
     @PostMapping("catalog/query")
     public String executeQuery(CatalogQueryDTO query, Model model) {
-        PlantInventoryEntryDTO p1 = new PlantInventoryEntryDTO();
-        p1.setId("1");
-        p1.setName("Ex1");
-        p1.setDescription("Very cool ex1");
-        p1.setPrice(BigDecimal.valueOf(400));
+        
+        List<PlantInventoryEntry> availablePlants = inventoryService.findAvailablePlants(
+                query.getName(),
+                businessPeriodAssembler.fromResource(query.getRentalPeriod()));
 
-        PlantInventoryEntryDTO p2 = new PlantInventoryEntryDTO();
-        p2.setId("2");
-        p2.setName("Ex2");
-        p2.setDescription("Very cool ex2");
-        p2.setPrice(BigDecimal.valueOf(700));
-
-        List<PlantInventoryEntryDTO> plants = new ArrayList<>();
-        plants.add(p1);
-        plants.add(p2);
-
-        model.addAttribute("plants", plants);
+        model.addAttribute("plants", plantInventoryEntryAssembler.toResources(availablePlants));
         model.addAttribute("po", new PurchaseOrderDTO());
         return "dashboard/catalog/query-result";
     }

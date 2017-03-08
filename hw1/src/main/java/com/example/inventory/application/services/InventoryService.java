@@ -36,4 +36,8 @@ public class InventoryService {
     public static class NoPlantAvailableException extends Exception {
 
     }
+
+    public List<PlantInventoryEntry> findAvailablePlants(String name, BusinessPeriod businessPeriod) {
+        return inventoryRepo.findAvailablePlants(name, businessPeriod);
+    }
 }
