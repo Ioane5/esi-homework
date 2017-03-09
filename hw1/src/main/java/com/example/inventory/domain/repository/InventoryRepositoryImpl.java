@@ -109,7 +109,7 @@ public class InventoryRepositoryImpl implements CustomInventoryRepository {
                         "i.equipmentCondition = com.example.inventory.domain.model.EquipmentCondition.SERVICEABLE and " +
                         "i not in (select r.plant from PlantReservation r where ?2 < r.schedule.endDate and ?3 > r.schedule.startDate)"
                 , PlantInventoryEntry.class)
-                .setParameter(1, "%" + name + "%")
+                .setParameter(1, "%" + name.toLowerCase() + "%")
                 .setParameter(2, period.getStartDate())
                 .setParameter(3, period.getEndDate())
                 .getResultList();

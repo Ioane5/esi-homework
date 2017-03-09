@@ -8,10 +8,7 @@ import com.example.inventory.domain.repository.PlantInventoryItemRepository;
 import com.example.inventory.domain.repository.PlantReservationRepository;
 import com.example.sales.domain.repository.PurchaseOrderRepository;
 import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlButton;
-import com.gargoylesoftware.htmlunit.html.HtmlDateInput;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
+import com.gargoylesoftware.htmlunit.html.*;
 import cucumber.api.PendingException;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
@@ -24,13 +21,11 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.htmlunit.MockMvcWebClientBuilder;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Created by vkop on 03-Mar-17.
- */
+import static org.assertj.core.api.Assertions.assertThat;
+
 @WebAppConfiguration
 @ContextConfiguration(classes = MainApplication.class)
 public class CreationOfPurchaseOrderSteps {
@@ -88,6 +83,7 @@ public class CreationOfPurchaseOrderSteps {
 
     @Given("^no purchase order exists in the system$")
     public void no_purchase_order_exists_in_the_system() throws Throwable {
+        //TODO
     }
 
     @When("^the customer queries the plant catalog for an \"([^\"]*)\" available from \"([^\"]*)\" to \"([^\"]*)\"$")
@@ -109,19 +105,21 @@ public class CreationOfPurchaseOrderSteps {
     @Then("^(\\d+) plants are shown$")
     public void plants_are_shown(int numberOfPlants) throws Throwable {
         List<?> rows = customerPage.getByXPath("//tr[contains(@class, 'table-row')]");
-        // Complete this step and do not forget to remove the following line
-        throw new PendingException();
+
+        assertThat(rows).hasSize(numberOfPlants);
     }
 
     @When("^the customer selects a \"([^\"]*)\"$")
     public void the_customer_selects_a(String plantDescription) throws Throwable {
         List<?> buttons = customerPage.getByXPath(String.format("//tr[./td = '%s']//button", plantDescription));
-        throw new PendingException();
+//        List<?> buttons = customerPage.getByXPath(String.format("//tr[td//text()[contains(., '%s')]]", plantDescription));
+        customerPage = ((HtmlButton)buttons.get(0)).click();
     }
 
-    @Then("^a purchase order should be created with a total price of (\\d+)\\.(\\d+)$")
-    public void a_purchase_order_should_be_created_with_a_total_price_of(BigDecimal total) throws Throwable {
-        // Complete this step and do not forget to remove the following line
-        throw new PendingException();
+    @Then("^a purchase order should be created with a total price of (\\d+\\.\\d+)$")
+    public void a_purchase_order_should_be_created_with_a_total_price_of(String total) throws Throwable {
+        HtmlDivision nameInput = (HtmlDivision) customerPage.getElementById("cost");
+
+        assertThat(nameInput.getTextContent()).isEqualToIgnoringCase(total);
     }
 }
