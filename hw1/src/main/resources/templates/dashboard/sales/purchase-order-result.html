@@ -1,0 +1,42 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Document</title>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"></link>
+</head>
+<body>
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-heading">Purchase order details</div>
+        <div class="panel-body">
+            <div class="form-horizontal" th:object="${order}">
+                <div class="col-sm-2">Plant name:</div>
+                <div class="col-sm-5" id="name" th:text="${order.plant.name}"></div>
+                <div class="clearfix"></div>
+
+                <div class="col-sm-2">Plant description:</div>
+                <div class="col-sm-5" id="description" th:text="${order.plant.description}"></div>
+                <div class="clearfix"></div>
+
+                <div class="col-sm-2">Start Date:</div>
+                <div class="col-sm-5" id="start-date" th:text="${order.rentalPeriod.startDate}"></div>
+                <div class="clearfix"></div>
+
+                <div class="col-sm-2">End Date:</div>
+                <div class="col-sm-5" id="end-date" th:text="${order.rentalPeriod.endDate}"></div>
+                <div class="clearfix"></div>
+
+                <div class="col-sm-2">Cost:</div>
+                <div class="col-sm-5" id="cost" th:text="${order.total}"></div>
+                <div class="clearfix"></div>
+
+                <div class="col-sm-2">Status:</div>
+                <div class="col-sm-5" id="status" th:text="${order.status}"></div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+</body>
+</html>
