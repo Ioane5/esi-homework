@@ -21,7 +21,7 @@ public class InventoryService {
     PlantReservationRepository plantReservationRepository;
 
     public PlantReservation reservePlantItem(PlantInventoryEntry entry, BusinessPeriod period, PurchaseOrder po) throws NoPlantAvailableException {
-        List<PlantInventoryItem> items = inventoryRepo.findAvailablePlantsInBusinessPeriod(entry.getId(), period);
+        List<PlantInventoryItem> items = inventoryRepo.findAvailablePlantItemsInBusinessPeriod(entry.getId(), period);
         if (items.size() < 1) {
             throw new NoPlantAvailableException();
         }

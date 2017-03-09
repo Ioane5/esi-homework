@@ -22,4 +22,8 @@ public class PlantInventoryEntryAssembler {
         return plants.stream().map(p -> toResource(p)).collect(Collectors.toList());
     }
 
+    public PlantInventoryEntry fromResource(PlantInventoryEntryDTO dto) {
+        return PlantInventoryEntry.of(dto.getId(), dto.getName(), dto.getDescription(), dto.getPrice());
+    }
+
 }
