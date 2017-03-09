@@ -82,9 +82,7 @@ public class CreationOfPurchaseOrderSteps {
     }
 
     @Given("^no purchase order exists in the system$")
-    public void no_purchase_order_exists_in_the_system() throws Throwable {
-        //TODO
-    }
+    public void no_purchase_order_exists_in_the_system() throws Throwable {}
 
     @When("^the customer queries the plant catalog for an \"([^\"]*)\" available from \"([^\"]*)\" to \"([^\"]*)\"$")
     public void the_customer_queries_the_plant_catalog_for_an_available_from_to(String plantName, String startDate, String endDate) throws Throwable {

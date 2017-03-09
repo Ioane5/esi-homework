@@ -70,12 +70,11 @@ public class InventoryRepositoryImpl implements CustomInventoryRepository {
                 .getSingleResult() > 0;
     }
 
-    @Override
-    public List<PlantInventoryItem> findAvailablePlantItemsInBusinessPeriod(BusinessPeriod period) {
+    private List<PlantInventoryItem> findAvailablePlantItemsInBusinessPeriod(BusinessPeriod period) {
         //noinspection unchecked
         return em.createQuery(
                 "select p from PlantInventoryItem p where " +
-                        "p.equipmentCondition = com.example.inventory.domain.model.EquipmentCondition.SERVICEABLE and p not in " +
+                        "p not in " +
                         "(select r.plant from PlantReservation r where ?1 < r.schedule.endDate and ?2 > r.schedule.startDate)")
                 .setParameter(1, period.getStartDate())
                 .setParameter(2, period.getEndDate())

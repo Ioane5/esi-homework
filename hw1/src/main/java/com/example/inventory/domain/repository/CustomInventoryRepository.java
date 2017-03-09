@@ -17,7 +17,6 @@ public interface CustomInventoryRepository {
      * @param period business period of interest
      * @return list of PlantInventoryItem
      */
-    List<PlantInventoryItem> findAvailablePlantItemsInBusinessPeriod(BusinessPeriod period);
     List<PlantInventoryItem> findAvailablePlantItemsInBusinessPeriod(String entryId, BusinessPeriod period);
     List<PlantInventoryItem> findPlantItemsNotHiredInLastSixMonths();
     List<PlantInventoryEntryCount> findAndCountAvailablePlants(String name, BusinessPeriod period);

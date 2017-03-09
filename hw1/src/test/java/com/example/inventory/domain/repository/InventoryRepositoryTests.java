@@ -5,6 +5,7 @@ import com.example.common.domain.model.BusinessPeriod;
 import com.example.common.infrastructure.IdentifierFactory;
 import com.example.inventory.domain.model.PlantInventoryEntry;
 import com.example.inventory.domain.model.PlantReservation;
+import com.example.maintenance.domain.repository.MaintenancePlanRepository;
 import com.example.sales.domain.repository.PurchaseOrderRepository;
 import com.example.sales.domain.model.PurchaseOrder;
 import org.junit.Ignore;
@@ -24,8 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(classes = MainApplication.class)
 @Sql(scripts = "plants-dataset.sql")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@Ignore
-//todo double check and fix the tests
 public class InventoryRepositoryTests {
     @Autowired
     private InventoryRepository inventoryRepo;
@@ -35,6 +34,8 @@ public class InventoryRepositoryTests {
     private PlantReservationRepository plantReservationRepo;
     @Autowired
     private PlantInventoryItemRepository plantInventoryItemRepo;
+    @Autowired
+    private MaintenancePlanRepository maintenancePlanRepository;
 
 
     @Test
@@ -55,7 +56,7 @@ public class InventoryRepositoryTests {
     public void findAvailableTest_SelectEveryWorkingAndUnusedEntry() {
         BusinessPeriod period = BusinessPeriod.of(LocalDate.of(1980, 1, 1), LocalDate.of(2480, 1, 1));
         assertThat(inventoryRepo.findAndCountAvailablePlants("", period))
-                .hasSize(3);
+                .hasSize(4);
     }
 
     @Test
@@ -83,6 +84,8 @@ public class InventoryRepositoryTests {
 
     @Test
     public void checkItemAvailabilityRelaxedWhenNearFuture() {
+        setUpReservations();
+
         PlantInventoryEntry pe = inventoryRepo.findOne("5");
         BusinessPeriod period = BusinessPeriod.of(LocalDate.of(2017, 3, 3), LocalDate.of(2017, 3, 5));
         boolean actual = inventoryRepo.itemAvailableRelaxed(pe, period);
@@ -92,6 +95,8 @@ public class InventoryRepositoryTests {
 
     @Test
     public void checkItemAvailabilityRelaxedWhenNotAvailableTest() {
+        setUpReservations();
+
         PlantInventoryEntry pe = inventoryRepo.findOne("6");
         BusinessPeriod period = BusinessPeriod.of(LocalDate.of(2017, 4, 3), LocalDate.of(2017, 4, 5));
         boolean actual = inventoryRepo.itemAvailableRelaxed(pe, period);
@@ -100,6 +105,8 @@ public class InventoryRepositoryTests {
 
     @Test
     public void checkItemAvailabilityRelaxedWhenAvailableTest() {
+        setUpReservations();
+
         PlantInventoryEntry pe = inventoryRepo.findOne("6");
         BusinessPeriod period = BusinessPeriod.of(LocalDate.of(2017, 4, 15), LocalDate.of(2017, 4, 20));
         boolean actual = inventoryRepo.itemAvailableRelaxed(pe, period);
@@ -128,6 +135,24 @@ public class InventoryRepositoryTests {
         PlantReservation r = PlantReservation.of(IdentifierFactory.nextId(), BusinessPeriod.of(startDate, endDate), plantInventoryItemRepo.findOne("1"))
                 .withPurchaseOrder(po);
         plantReservationRepo.save(r);
+    }
+
+    private void setUpReservation(LocalDate startDate, LocalDate endDate, String plant_id, String maintenance_id) {
+        PlantReservation r = PlantReservation.of(IdentifierFactory.nextId(), BusinessPeriod.of(startDate, endDate), plantInventoryItemRepo.findOne(plant_id));
+
+        if(maintenance_id != null) {
+            r.withMaintenancePlan(maintenancePlanRepository.findOne(maintenance_id));
+        }
+
+        plantReservationRepo.save(r);
+    }
+
+    private void setUpReservations() {
+//        2017, 3, 9
+        setUpReservation(LocalDate.now().plusDays(13), LocalDate.now().plusDays(15), "1", null);
+
+        setUpReservation(LocalDate.now().minusDays(8), LocalDate.now().plusDays(16), "12", "1");
+        setUpReservation(LocalDate.now().plusMonths(1), LocalDate.now().plusMonths(1), "13", "1");
     }
 }
 
