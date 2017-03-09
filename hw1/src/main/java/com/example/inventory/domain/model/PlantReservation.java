@@ -24,7 +24,7 @@ public class PlantReservation {
     @ManyToOne
     MaintenancePlan maintenancePlan;
 
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     PurchaseOrder rental;
 
     public static PlantReservation of(String id, BusinessPeriod schedule, PlantInventoryItem plant) {
