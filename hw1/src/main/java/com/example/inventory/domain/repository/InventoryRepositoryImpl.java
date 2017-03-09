@@ -10,9 +10,7 @@ import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
 
-/**
- * Created by ioane5 on 2/20/17.
- */
+
 @SuppressWarnings("JpaQlInspection")
 public class InventoryRepositoryImpl implements CustomInventoryRepository {
     @Autowired
@@ -70,18 +68,6 @@ public class InventoryRepositoryImpl implements CustomInventoryRepository {
                 .getSingleResult() > 0;
     }
 
-    private List<PlantInventoryItem> findAvailablePlantItemsInBusinessPeriod(BusinessPeriod period) {
-        //noinspection unchecked
-        return em.createQuery(
-                "select p from PlantInventoryItem p where " +
-                        "p not in " +
-                        "(select r.plant from PlantReservation r where ?1 < r.schedule.endDate and ?2 > r.schedule.startDate)")
-                .setParameter(1, period.getStartDate())
-                .setParameter(2, period.getEndDate())
-                .getResultList();
-
-    }
-
     @Override
     public List<PlantInventoryItem> findAvailablePlantItemsInBusinessPeriod(String entryId, BusinessPeriod period) {
         //noinspection unchecked
@@ -98,7 +84,13 @@ public class InventoryRepositoryImpl implements CustomInventoryRepository {
     @Override
     public List<PlantInventoryItem> findPlantItemsNotHiredInLastSixMonths() {
         BusinessPeriod period = BusinessPeriod.of(LocalDate.now().minusMonths(6), LocalDate.now());
-        return findAvailablePlantItemsInBusinessPeriod(period);
+        return em.createQuery(
+                "select p from PlantInventoryItem p where p not in " +
+                        "(select r.plant from PlantReservation r where ?1 < r.schedule.endDate and ?2 > r.schedule.startDate)",
+                PlantInventoryItem.class)
+                .setParameter(1, period.getStartDate())
+                .setParameter(2, period.getEndDate())
+                .getResultList();
     }
 
     @Override
