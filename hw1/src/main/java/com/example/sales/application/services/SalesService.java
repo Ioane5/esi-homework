@@ -1,5 +1,6 @@
 package com.example.sales.application.services;
 
+import com.example.common.application.exceptions.PlantNotFoundException;
 import com.example.common.domain.model.BusinessPeriod;
 import com.example.common.infrastructure.IdentifierFactory;
 import com.example.inventory.application.services.InventoryService;
@@ -28,7 +29,7 @@ public class SalesService {
         try {
             PlantReservation pr = inventoryService.reservePlantItem(plant, period, po);
             po.addReservationAndOpenPO(pr);
-        } catch (InventoryService.NoPlantAvailableException e) {
+        } catch (PlantNotFoundException e) {
             po.rejectPO();
         }
         orderRepo.save(po);
