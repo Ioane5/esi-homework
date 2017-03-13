@@ -1,5 +1,6 @@
 package com.example.inventory.application.services;
 
+import com.example.common.application.exceptions.PlantNotFoundException;
 import com.example.common.domain.model.BusinessPeriod;
 import com.example.common.infrastructure.IdentifierFactory;
 import com.example.inventory.domain.model.PlantInventoryEntry;
@@ -20,10 +21,10 @@ public class InventoryService {
     @Autowired
     PlantReservationRepository plantReservationRepository;
 
-    public PlantReservation reservePlantItem(PlantInventoryEntry entry, BusinessPeriod period, PurchaseOrder po) throws NoPlantAvailableException {
+    public PlantReservation reservePlantItem(PlantInventoryEntry entry, BusinessPeriod period, PurchaseOrder po) throws PlantNotFoundException {
         List<PlantInventoryItem> items = inventoryRepo.findAvailablePlantItemsInBusinessPeriod(entry.getId(), period);
         if (items.size() < 1) {
-            throw new NoPlantAvailableException();
+            throw new PlantNotFoundException("The requested plant is unavailable");
         }
         PlantInventoryItem freePlant = items.get(0);
 
@@ -31,10 +32,6 @@ public class InventoryService {
         plantReservationRepository.save(pr);
 
         return pr;
-    }
-
-    public static class NoPlantAvailableException extends Exception {
-
     }
 
     public List<PlantInventoryEntry> findAvailablePlants(String name, BusinessPeriod businessPeriod) {

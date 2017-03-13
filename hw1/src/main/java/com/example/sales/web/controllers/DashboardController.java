@@ -1,17 +1,14 @@
 package com.example.sales.web.controllers;
 
-import com.example.common.application.dto.BusinessPeriodDTO;
 import com.example.common.application.services.BusinessPeriodAssembler;
 import com.example.inventory.application.services.InventoryService;
 import com.example.inventory.application.services.PlantInventoryEntryAssembler;
 import com.example.inventory.domain.model.PlantInventoryEntry;
-import com.example.inventory.domain.repository.InventoryRepository;
-import com.example.inventory.web.dto.PlantInventoryEntryDTO;
 import com.example.sales.application.services.PurchaseOrderAssembler;
 import com.example.sales.application.services.SalesService;
 import com.example.sales.domain.model.PurchaseOrder;
 import com.example.sales.web.dto.CatalogQueryDTO;
-import com.example.sales.web.dto.PurchaseOrderDTO;
+import com.example.sales.application.dto.PurchaseOrderDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,9 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
