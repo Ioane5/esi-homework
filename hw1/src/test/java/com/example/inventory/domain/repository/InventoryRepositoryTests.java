@@ -104,6 +104,7 @@ public class InventoryRepositoryTests {
     }
 
     @Test
+    //TODO fix the test
     public void checkItemAvailabilityRelaxedWhenAvailableTest() {
         setUpReservations();
 
