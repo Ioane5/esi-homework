@@ -8,7 +8,6 @@ import com.example.inventory.domain.model.PlantReservation;
 import com.example.maintenance.domain.repository.MaintenancePlanRepository;
 import com.example.sales.domain.repository.PurchaseOrderRepository;
 import com.example.sales.domain.model.PurchaseOrder;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,7 +86,9 @@ public class InventoryRepositoryTests {
         setUpReservations();
 
         PlantInventoryEntry pe = inventoryRepo.findOne("5");
-        BusinessPeriod period = BusinessPeriod.of(LocalDate.of(2017, 3, 3), LocalDate.of(2017, 3, 5));
+        LocalDate start = LocalDate.now().plusDays(6);
+        LocalDate end = start.plusDays(5);
+        BusinessPeriod period = BusinessPeriod.of(start, end);
         boolean actual = inventoryRepo.itemAvailableRelaxed(pe, period);
         assertThat(actual).isEqualTo(false);
     }
@@ -98,18 +99,21 @@ public class InventoryRepositoryTests {
         setUpReservations();
 
         PlantInventoryEntry pe = inventoryRepo.findOne("6");
-        BusinessPeriod period = BusinessPeriod.of(LocalDate.of(2017, 4, 3), LocalDate.of(2017, 4, 5));
+        LocalDate start = LocalDate.now().plusMonths(1);
+        LocalDate end = start.plusDays(5);
+        BusinessPeriod period = BusinessPeriod.of(start, end);
         boolean actual = inventoryRepo.itemAvailableRelaxed(pe, period);
         assertThat(actual).isEqualTo(false);
     }
 
     @Test
-    //TODO fix the test
     public void checkItemAvailabilityRelaxedWhenAvailableTest() {
         setUpReservations();
 
         PlantInventoryEntry pe = inventoryRepo.findOne("6");
-        BusinessPeriod period = BusinessPeriod.of(LocalDate.of(2017, 4, 15), LocalDate.of(2017, 4, 20));
+        LocalDate start = LocalDate.now().plusMonths(1).plusDays(6);
+        LocalDate end = start.plusDays(5);
+        BusinessPeriod period = BusinessPeriod.of(start, end);
         boolean actual = inventoryRepo.itemAvailableRelaxed(pe, period);
         assertThat(actual).isEqualTo(true);
     }
@@ -149,7 +153,6 @@ public class InventoryRepositoryTests {
     }
 
     private void setUpReservations() {
-//        2017, 3, 9
         setUpReservation(LocalDate.now().plusDays(13), LocalDate.now().plusDays(15), "1", null);
 
         setUpReservation(LocalDate.now().minusDays(8), LocalDate.now().plusDays(16), "12", "1");
