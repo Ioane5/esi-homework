@@ -1,5 +1,6 @@
 package com.example.sales.application.services;
 
+import com.example.common.application.exceptions.POValidationException;
 import com.example.common.application.exceptions.PlantNotFoundException;
 import com.example.common.domain.model.BusinessPeriod;
 import com.example.common.infrastructure.IdentifierFactory;
@@ -27,17 +28,9 @@ public class SalesService {
     @Autowired
     PurchaseOrderValidator poValidator;
 
-    public PurchaseOrder createPO(PlantInventoryEntry plant, BusinessPeriod period) {
+    public PurchaseOrder createPO(PlantInventoryEntry plant, BusinessPeriod period) throws POValidationException {
         PurchaseOrder po = PurchaseOrder.of(IdentifierFactory.nextId(), plant, LocalDate.now(), period);
-        DataBinder binder = new DataBinder(po);
-        binder.addValidators(poValidator);
-        binder.validate();
-        if (binder.getBindingResult().hasErrors()) {
-            // TODO: what should happen here?
-            // throw POValidationException?!
-        } else {
-            orderRepo.save(po);
-        }
+        validateAndSavePO(po);
 
         try {
             PlantReservation pr = inventoryService.reservePlantItem(plant, period, po);
@@ -45,7 +38,19 @@ public class SalesService {
         } catch (PlantNotFoundException e) {
             po.rejectPO();
         }
-        orderRepo.save(po);
+        validateAndSavePO(po);
         return po;
     }
+
+    private void validateAndSavePO(PurchaseOrder po) throws POValidationException {
+        DataBinder binder = new DataBinder(po);
+        binder.addValidators(poValidator);
+        binder.validate();
+        if (binder.getBindingResult().hasErrors()) {
+            throw new POValidationException();
+        } else {
+            orderRepo.save(po);
+        }
+    }
+
 }
