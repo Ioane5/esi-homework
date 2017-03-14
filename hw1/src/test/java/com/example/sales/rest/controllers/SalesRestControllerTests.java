@@ -1,14 +1,8 @@
 package com.example.sales.rest.controllers;
 
 import com.example.MainApplication;
-import com.example.common.application.dto.BusinessPeriodDTO;
-import com.example.inventory.application.dto.PlantInventoryEntryDTO;
-import com.example.inventory.domain.repository.PlantInventoryEntryRepository;
-import com.example.sales.application.dto.PurchaseOrderDTO;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,12 +29,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = MainApplication.class) // Check if the name of this class is correct or not
+@SpringBootTest(classes = MainApplication.class)
 @WebAppConfiguration
 @DirtiesContext
 public class SalesRestControllerTests {
-    @Autowired
-    PlantInventoryEntryRepository repo;
     @Autowired
     private WebApplicationContext wac;
     private MockMvc mockMvc;
@@ -52,26 +44,5 @@ public class SalesRestControllerTests {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
     }
 
-    @Test
-    @Sql("plants-dataset.sql")
-    @Ignore //TODO fix the test
-    public void testGetAllPlants() throws Exception {
-        MvcResult result = mockMvc.perform(get("/api/sales/plants?name=Exc&startDate=2017-04-14&endDate=2017-04-25"))
-                .andExpect(status().isOk())
-                .andExpect(header().string("Location", isEmptyOrNullString()))
-                .andReturn();
-
-        List<PlantInventoryEntryDTO> plants = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<PlantInventoryEntryDTO>>() {
-        });
-
-        assertThat(plants.size()).isEqualTo(2);
-
-        PurchaseOrderDTO order = new PurchaseOrderDTO();
-        order.setPlant(plants.get(1));
-        order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now()));
-
-        mockMvc.perform(post("/api/sales/orders").content(mapper.writeValueAsString(order)).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
-    }
 }
 

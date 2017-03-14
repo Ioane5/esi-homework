@@ -23,21 +23,8 @@ import java.util.List;
 @RequestMapping("/api/sales")
 public class SalesRestController {
     @Autowired
-    InventoryService inventoryService;
-    @Autowired
     SalesService salesService;
-    @Autowired
-    PlantInventoryEntryAssembler plantInventoryEntryAssembler;
 
-    @GetMapping("/plants")
-    public List<PlantInventoryEntryDTO> findAvailablePlants(
-            @RequestParam(name = "name") String plantName,
-            @RequestParam(name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(name = "endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
-    ) {
-        List<PlantInventoryEntry> plants = inventoryService.findAvailablePlants(plantName, BusinessPeriod.of(startDate, endDate));
-        return plantInventoryEntryAssembler.toResources(plants);
-    }
 
 //    @GetMapping("/orders/{id}")
 //    @ResponseStatus(HttpStatus.OK)
