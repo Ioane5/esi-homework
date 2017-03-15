@@ -62,6 +62,6 @@ public class SalesRestController {
 
     @ExceptionHandler(PlantNotAvailableException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public void handPlantNotAvailableExceptionn(PlantNotAvailableException ex) {
+    public void handPlantNotAvailableException(PlantNotAvailableException ex) {
     }
 }
