@@ -52,7 +52,6 @@ public class SalesRestController {
         PurchaseOrderDTO newlyCreatePODTO = poAssembler.toResource(purchaseOrder);
 
         HttpHeaders headers = new HttpHeaders();
-        newlyCreatePODTO.getId().getHref();
         try {
             headers.setLocation(new URI(newlyCreatePODTO.getId().getHref()));
         } catch (URISyntaxException e) {

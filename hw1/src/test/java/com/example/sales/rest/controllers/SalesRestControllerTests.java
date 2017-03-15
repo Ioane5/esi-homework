@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
@@ -56,7 +55,7 @@ public class SalesRestControllerTests {
 
         PurchaseOrderDTO order = new PurchaseOrderDTO();
         order.setPlant(plantInventoryEntryAssembler.toResource(pe));
-        order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.of(2017, 1, 1), LocalDate.of(2017, 4, 1)));
+        order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now().plusDays(2)));
 
         mockMvc.perform(post("/api/sales/orders")
                 .content(mapper.writeValueAsString(order))
@@ -71,12 +70,12 @@ public class SalesRestControllerTests {
 
         PurchaseOrderDTO order = new PurchaseOrderDTO();
         order.setPlant(plantInventoryEntryAssembler.toResource(pe));
-        order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.of(2017, 1, 1), LocalDate.of(2017, 4, 1)));
+        order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now().plusDays(2)));
 
         mockMvc.perform(post("/api/sales/orders")
                 .content(mapper.writeValueAsString(order))
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is(HttpStatus.NOT_FOUND.value()));
+                .andExpect(status().isNotFound());
     }
 }
 

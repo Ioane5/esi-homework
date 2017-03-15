@@ -17,7 +17,8 @@ import org.springframework.validation.Errors;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = MainApplication.class)
@@ -105,7 +106,7 @@ public class PurchaseOrderValidatorTest {
 
     @Test
     public void testValidateOnValidClosedPO() throws Exception {
-        order.addReservationAndOpenPO(validReservation).rejectPO();
+        order.addReservationAndOpenPO(validReservation).closePO();
         assertFalse(getValidationErrors(order).hasErrors());
     }
 
@@ -117,7 +118,7 @@ public class PurchaseOrderValidatorTest {
 
     @Test
     public void testValidateOnInvalidClosedPO() throws Exception {
-        order.addReservationAndOpenPO(invalidReservation).rejectPO();
+        order.addReservationAndOpenPO(invalidReservation).closePO();
         assertEquals(1, getValidationErrors(order).getErrorCount());
     }
 
@@ -130,7 +131,7 @@ public class PurchaseOrderValidatorTest {
 
     @Test
     public void testValidateTotalCostOfClosedPO() throws Exception {
-        order.addReservationAndOpenPO(validReservation).rejectPO();
+        order.addReservationAndOpenPO(validReservation).closePO();
         order.updateTotalCost(BigDecimal.ZERO);
         assertEquals(1, getValidationErrors(order).getErrorCount());
     }
