@@ -5,6 +5,7 @@ import com.example.sales.application.dto.PurchaseOrderDTO;
 import com.example.sales.application.services.PurchaseOrderAssembler;
 import com.example.sales.application.services.SalesService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,4 +40,9 @@ public class SalesRestController {
 //
 //        return new ResponseEntity<PurchaseOrderDTO>(newlyCreatePODTO, headers, HttpStatus.CREATED);
 //    }
+
+    @ExceptionHandler(PurchaseOrderNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public void handlePOValidationException(PurchaseOrderNotFoundException ex) {
+    }
 }
