@@ -1,6 +1,11 @@
 package com.example.sales.rest.controllers;
 
 import com.example.MainApplication;
+import com.example.common.application.dto.BusinessPeriodDTO;
+import com.example.inventory.application.services.PlantInventoryEntryAssembler;
+import com.example.inventory.domain.model.PlantInventoryEntry;
+import com.example.inventory.domain.repository.PlantInventoryEntryRepository;
+import com.example.sales.application.dto.PurchaseOrderDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,36 +18,64 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDate;
-import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import static org.hamcrest.Matchers.*;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = MainApplication.class)
 @WebAppConfiguration
-@DirtiesContext
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class SalesRestControllerTests {
+    @Autowired
+    ObjectMapper mapper;
+    @Autowired
+    PlantInventoryEntryRepository plantInventoryEntryRepository;
+    @Autowired
+    PlantInventoryEntryAssembler plantInventoryEntryAssembler;
     @Autowired
     private WebApplicationContext wac;
     private MockMvc mockMvc;
-    @Autowired
-    ObjectMapper mapper;
 
     @Before
     public void setup() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
     }
 
+
+    @Test
+    @Sql("plants-dataset.sql")
+    public void testCheckValidPurchaseOrder() throws Exception {
+        PlantInventoryEntry pe = plantInventoryEntryRepository.findOne("1");
+
+        PurchaseOrderDTO order = new PurchaseOrderDTO();
+        order.setPlant(plantInventoryEntryAssembler.toResource(pe));
+        order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now().plusDays(2)));
+
+        mockMvc.perform(post("/api/sales/orders")
+                .content(mapper.writeValueAsString(order))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    @Sql("plants-dataset.sql")
+    public void testCheckRentedPurchaseOrderCreation() throws Exception {
+        PlantInventoryEntry pe = plantInventoryEntryRepository.findOne("2");
+
+        PurchaseOrderDTO order = new PurchaseOrderDTO();
+        order.setPlant(plantInventoryEntryAssembler.toResource(pe));
+        order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now().plusDays(2)));
+
+        mockMvc.perform(post("/api/sales/orders")
+                .content(mapper.writeValueAsString(order))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
 }
 

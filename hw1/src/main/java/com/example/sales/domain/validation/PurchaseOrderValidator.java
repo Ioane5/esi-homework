@@ -40,7 +40,7 @@ public class PurchaseOrderValidator implements Validator {
     }
 
     private void validateReservation(PurchaseOrder po, Errors errors) {
-        if (po.getStatus().equals(POStatus.PENDING)) return;
+        if (po.getStatus().equals(POStatus.PENDING) || po.getStatus().equals(POStatus.REJECTED)) return;
         PlantReservation reservation = po.getReservation();
 
         if (reservation.getId() == null) {
@@ -84,7 +84,7 @@ public class PurchaseOrderValidator implements Validator {
     }
 
     private void validateTotalCost(PurchaseOrder po, Errors errors) {
-        if (po.getStatus().equals(POStatus.PENDING)) return;
+        if (po.getStatus().equals(POStatus.PENDING) || po.getStatus().equals(POStatus.REJECTED)) return;
         if (po.getTotal().compareTo(BigDecimal.ZERO) != 1) {
             errors.rejectValue("total", "Total should be positive");
         }
