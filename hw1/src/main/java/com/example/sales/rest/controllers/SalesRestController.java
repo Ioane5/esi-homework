@@ -1,6 +1,7 @@
 package com.example.sales.rest.controllers;
 
 
+import com.example.common.application.exceptions.POValidationException;
 import com.example.common.application.exceptions.PlantNotAvailableException;
 import com.example.common.application.services.BusinessPeriodAssembler;
 import com.example.common.domain.model.BusinessPeriod;
@@ -40,7 +41,7 @@ public class SalesRestController {
 //    }
 
     @PostMapping("/orders")
-    public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(@RequestBody PurchaseOrderDTO partialPODTO) throws PlantNotAvailableException {
+    public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(@RequestBody PurchaseOrderDTO partialPODTO) throws PlantNotAvailableException, POValidationException {
         PlantInventoryEntry plant = plantInventoryEntryAssembler.fromResource(partialPODTO.getPlant());
         BusinessPeriod period = businessPeriodAssembler.fromResource(partialPODTO.getRentalPeriod());
 
@@ -62,6 +63,11 @@ public class SalesRestController {
 
     @ExceptionHandler(PlantNotAvailableException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public void handPlantNotAvailableException(PlantNotAvailableException ex) {
+    public void handlePlantNotAvailableException(PlantNotAvailableException ex) {
+    }
+
+    @ExceptionHandler(POValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public void handlePOValidationException(POValidationException ex) {
     }
 }
