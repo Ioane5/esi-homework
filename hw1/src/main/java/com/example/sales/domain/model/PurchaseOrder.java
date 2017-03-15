@@ -65,4 +65,8 @@ public class PurchaseOrder {
         total = price.multiply(BigDecimal.valueOf(numberOfWorkingDays));
     }
 
+    public void closePO() {
+        this.status = POStatus.CLOSED;
+    }
+
 }

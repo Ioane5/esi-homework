@@ -1,5 +1,6 @@
 package com.example.sales.application.services;
 
+import com.example.common.application.exceptions.POValidationException;
 import com.example.common.application.exceptions.PlantNotFoundException;
 import com.example.common.application.exceptions.PurchaseOrderNotFoundException;
 import com.example.common.domain.model.BusinessPeriod;
@@ -9,8 +10,10 @@ import com.example.inventory.domain.model.PlantInventoryEntry;
 import com.example.inventory.domain.model.PlantReservation;
 import com.example.sales.domain.model.PurchaseOrder;
 import com.example.sales.domain.repository.PurchaseOrderRepository;
+import com.example.sales.domain.validation.PurchaseOrderValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.DataBinder;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,9 +27,12 @@ public class SalesService {
     @Autowired
     PurchaseOrderRepository orderRepo;
 
-    public PurchaseOrder createPO(PlantInventoryEntry plant, BusinessPeriod period) {
+    @Autowired
+    PurchaseOrderValidator poValidator;
+
+    public PurchaseOrder createPO(PlantInventoryEntry plant, BusinessPeriod period) throws POValidationException {
         PurchaseOrder po = PurchaseOrder.of(IdentifierFactory.nextId(), plant, LocalDate.now(), period);
-        orderRepo.save(po);
+        validateAndSavePO(po);
 
         try {
             PlantReservation pr = inventoryService.reservePlantItem(plant, period, po);
@@ -34,7 +40,7 @@ public class SalesService {
         } catch (PlantNotFoundException e) {
             po.rejectPO();
         }
-        orderRepo.save(po);
+        validateAndSavePO(po);
         return po;
     }
 
@@ -50,4 +56,16 @@ public class SalesService {
     public List<PurchaseOrder> findAllPOs() {
         return orderRepo.findAll();
     }
+
+    private void validateAndSavePO(PurchaseOrder po) throws POValidationException {
+        DataBinder binder = new DataBinder(po);
+        binder.addValidators(poValidator);
+        binder.validate();
+        if (binder.getBindingResult().hasErrors()) {
+            throw new POValidationException();
+        } else {
+            orderRepo.save(po);
+        }
+    }
+
 }

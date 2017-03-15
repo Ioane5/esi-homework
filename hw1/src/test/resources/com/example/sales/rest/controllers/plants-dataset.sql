@@ -15,6 +15,7 @@ insert into plant_inventory_entry (id, name, description, price) values (14, 'D-
 
 insert into plant_inventory_item (id, plant_info_id, serial_number, equipment_condition) values (1, 1, 'A01', 'SERVICEABLE');
 insert into plant_inventory_item (id, plant_info_id, serial_number, equipment_condition) values (2, 1, 'A02', 'SERVICEABLE');
+insert into plant_inventory_item (id, plant_info_id, serial_number, equipment_condition) values (15, 2, 'A017', 'SERVICEABLE');
 insert into plant_inventory_item (id, plant_info_id, serial_number, equipment_condition) values (3, 3, 'A03', 'UNSERVICEABLE_REPAIRABLE');
 insert into plant_inventory_item (id, plant_info_id, serial_number, equipment_condition) values (4, 3, 'A04', 'UNSERVICEABLE_REPAIRABLE');
 insert into plant_inventory_item (id, plant_info_id, serial_number, equipment_condition) values (5, 3, 'A05', 'UNSERVICEABLE_REPAIRABLE');
@@ -35,3 +36,4 @@ insert into plant_reservation (id, plant_id, start_date, end_date) values (5, 4,
 insert into plant_reservation (id, plant_id, start_date, end_date) values (6, 6, '2009-03-22', '2009-03-24');
 insert into plant_reservation (id, plant_id, start_date, end_date) values (7, 7, '2009-03-22', '2009-03-24');
 insert into plant_reservation (id, plant_id, start_date, end_date) values (8, 5, '2009-03-22', '2009-03-24');
+insert into plant_reservation (id, plant_id, start_date, end_date) values (9, 15, '2016-03-22', '2118-03-24');
