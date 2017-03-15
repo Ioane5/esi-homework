@@ -40,7 +40,7 @@ public class SalesRestController {
 //    }
 
     @PostMapping("/orders")
-    public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(@RequestBody PurchaseOrderDTO partialPODTO) {
+    public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(@RequestBody PurchaseOrderDTO partialPODTO) throws PlantNotAvailableException {
         PlantInventoryEntry plant = plantInventoryEntryAssembler.fromResource(partialPODTO.getPlant());
         BusinessPeriod period = businessPeriodAssembler.fromResource(partialPODTO.getRentalPeriod());
 
