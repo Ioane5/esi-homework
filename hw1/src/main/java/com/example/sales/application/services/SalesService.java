@@ -2,6 +2,7 @@ package com.example.sales.application.services;
 
 import com.example.common.application.exceptions.POValidationException;
 import com.example.common.application.exceptions.PlantNotFoundException;
+import com.example.common.application.exceptions.PurchaseOrderNotFoundException;
 import com.example.common.domain.model.BusinessPeriod;
 import com.example.common.infrastructure.IdentifierFactory;
 import com.example.inventory.application.services.InventoryService;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.DataBinder;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class SalesService {
@@ -40,6 +42,19 @@ public class SalesService {
         }
         validateAndSavePO(po);
         return po;
+    }
+
+    public PurchaseOrder findPO(String id) throws PurchaseOrderNotFoundException {
+        PurchaseOrder po = orderRepo.findOne(id);
+        if(po==null){
+            throw new PurchaseOrderNotFoundException();
+        }
+
+        return po;
+    }
+
+    public List<PurchaseOrder> findAllPOs() {
+        return orderRepo.findAll();
     }
 
     private void validateAndSavePO(PurchaseOrder po) throws POValidationException {
