@@ -25,7 +25,7 @@ public class SalesRestController {
 
     @GetMapping("/orders")
     public List<PurchaseOrderDTO> fetchPurchaseOrders() {
-        return purchaseOrderAssembler.toResources(salesService.findPOs());
+        return purchaseOrderAssembler.toResources(salesService.findAllPOs());
     }
 
 //    @PostMapping("/orders")

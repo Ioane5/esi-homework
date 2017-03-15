@@ -47,7 +47,7 @@ public class SalesService {
         return po;
     }
 
-    public List<PurchaseOrder> findPOs() {
+    public List<PurchaseOrder> findAllPOs() {
         return orderRepo.findAll();
     }
 }
