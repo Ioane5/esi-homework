@@ -1,5 +1,6 @@
 package com.example.sales.web.controllers;
 
+import com.example.common.application.exceptions.POValidationException;
 import com.example.common.application.services.BusinessPeriodAssembler;
 import com.example.inventory.application.services.InventoryService;
 import com.example.inventory.application.services.PlantInventoryEntryAssembler;
@@ -57,12 +58,16 @@ public class DashboardController {
 
     @PostMapping("sales/orders")
     public String createOrder(PurchaseOrderDTO orderDTO, Model model) {
-        PurchaseOrder po = salesService.createPO(
-                plantInventoryEntryAssembler.fromResource(orderDTO.getPlant()),
-                businessPeriodAssembler.fromResource(orderDTO.getRentalPeriod())
-        );
-
-        model.addAttribute("order", purchaseOrderAssembler.toResource(po));
+        try {
+            PurchaseOrder po = salesService.createPO(
+                    plantInventoryEntryAssembler.fromResource(orderDTO.getPlant()),
+                    businessPeriodAssembler.fromResource(orderDTO.getRentalPeriod())
+            );
+            model.addAttribute("order", purchaseOrderAssembler.toResource(po));
+        } catch (POValidationException e) {
+            // TODO: handle invalid po data
+            // return "dashboard/orders" ?!
+        }
         return "dashboard/sales/purchase-order-result";
     }
 
