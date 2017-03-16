@@ -17,6 +17,7 @@ import org.apache.http.util.TextUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,16 +28,16 @@ import java.net.URISyntaxException;
 @RequestMapping("/api/sales")
 public class SalesRestController {
     @Autowired
-    SalesService salesService;
+    private SalesService salesService;
 
     @Autowired
-    PurchaseOrderAssembler purchaseOrderAssembler;
+    private PurchaseOrderAssembler purchaseOrderAssembler;
     @Autowired
-    PurchaseOrderAssembler poAssembler;
+    private PurchaseOrderAssembler poAssembler;
     @Autowired
-    PlantInventoryEntryAssembler plantInventoryEntryAssembler;
+    private PlantInventoryEntryAssembler plantInventoryEntryAssembler;
     @Autowired
-    BusinessPeriodAssembler businessPeriodAssembler;
+    private BusinessPeriodAssembler businessPeriodAssembler;
 
     @GetMapping("/orders/{id}")
     public PurchaseOrderDTO fetchPurchaseOrder(@PathVariable("id") String id) throws PurchaseOrderNotFoundException {
@@ -48,22 +49,6 @@ public class SalesRestController {
         return purchaseOrderAssembler.toResources(salesService.findAllPOs());
     }
 
-//    @PostMapping("/orders")
-//    public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(@RequestBody PurchaseOrderDTO partialPODTO) {
-//        PurchaseOrderDTO newlyCreatePODTO = ...
-//        // TODO: Complete this part
-//
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setLocation(new URI(newlyCreatePODTO.getId().getHref()));
-//        // The above line won't working until you update PurchaseOrderDTO to extend ResourceSupport
-//
-//        return new ResponseEntity<PurchaseOrderDTO>(newlyCreatePODTO, headers, HttpStatus.CREATED);
-//    }
-
-    @ExceptionHandler(PurchaseOrderNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public void handlePOValidationException(PurchaseOrderNotFoundException ex) {
-    }
     @PostMapping("/orders")
     public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(@RequestBody PurchaseOrderDTO partialPODTO) throws PlantNotAvailableException, POValidationException {
         PlantInventoryEntry plant = plantInventoryEntryAssembler.fromResource(partialPODTO.getPlant());
@@ -92,5 +77,10 @@ public class SalesRestController {
     @ExceptionHandler(POValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public void handlePOValidationException(POValidationException ex) {
+    }
+
+    @ExceptionHandler(PurchaseOrderNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public void handlePOValidationException(PurchaseOrderNotFoundException ex) {
     }
 }
