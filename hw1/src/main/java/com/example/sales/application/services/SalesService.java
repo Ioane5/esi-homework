@@ -22,13 +22,13 @@ import java.util.List;
 public class SalesService {
 
     @Autowired
-    InventoryService inventoryService;
+    private InventoryService inventoryService;
 
     @Autowired
-    PurchaseOrderRepository orderRepo;
+    private PurchaseOrderRepository orderRepo;
 
     @Autowired
-    PurchaseOrderValidator poValidator;
+    private PurchaseOrderValidator poValidator;
 
     public PurchaseOrder createPO(PlantInventoryEntry plant, BusinessPeriod period) throws POValidationException {
         PurchaseOrder po = PurchaseOrder.of(IdentifierFactory.nextId(), plant, LocalDate.now(), period);
@@ -46,7 +46,7 @@ public class SalesService {
 
     public PurchaseOrder findPO(String id) throws PurchaseOrderNotFoundException {
         PurchaseOrder po = orderRepo.findOne(id);
-        if(po==null){
+        if (po == null) {
             throw new PurchaseOrderNotFoundException();
         }
 
