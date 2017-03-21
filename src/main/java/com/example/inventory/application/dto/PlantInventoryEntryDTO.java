@@ -1,8 +1,8 @@
 package com.example.inventory.application.dto;
 
+import com.example.common.rest.ResourceSupport;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.hateoas.ResourceSupport;
 
 import java.math.BigDecimal;
 
