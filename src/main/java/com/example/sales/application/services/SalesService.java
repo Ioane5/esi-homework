@@ -30,7 +30,7 @@ public class SalesService {
     @Autowired
     private PurchaseOrderValidator poValidator;
 
-    public PurchaseOrder createPO(PlantInventoryEntry plant, BusinessPeriod period) throws POValidationException {
+    public PurchaseOrder createPO(PlantInventoryEntry plant, BusinessPeriod period) throws POValidationException, PlantNotFoundException {
         PurchaseOrder po = PurchaseOrder.of(IdentifierFactory.nextId(), plant, LocalDate.now(), period);
         validateAndSavePO(po);
 
@@ -39,8 +39,10 @@ public class SalesService {
             po.addReservationAndOpenPO(pr);
         } catch (PlantNotFoundException e) {
             po.reject();
+            throw e;
+        } finally {
+            validateAndSavePO(po);
         }
-        validateAndSavePO(po);
         return po;
     }
 

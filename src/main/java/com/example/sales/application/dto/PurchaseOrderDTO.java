@@ -4,6 +4,7 @@ package com.example.sales.application.dto;
 import com.example.common.application.dto.BusinessPeriodDTO;
 import com.example.common.rest.ResourceSupport;
 import com.example.inventory.application.dto.PlantInventoryEntryDTO;
+import com.example.sales.domain.model.POStatus;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -14,5 +15,5 @@ public class PurchaseOrderDTO extends ResourceSupport {
     PlantInventoryEntryDTO plant;
     BusinessPeriodDTO rentalPeriod;
     BigDecimal total;
-    String status;
+    POStatus status;
 }
