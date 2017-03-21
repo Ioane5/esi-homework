@@ -38,7 +38,7 @@ public class SalesService {
             PlantReservation pr = inventoryService.reservePlantItem(plant, period, po);
             po.addReservationAndOpenPO(pr);
         } catch (PlantNotFoundException e) {
-            po.rejectPO();
+            po.reject();
         }
         validateAndSavePO(po);
         return po;
@@ -50,6 +50,17 @@ public class SalesService {
             throw new PurchaseOrderNotFoundException();
         }
 
+        return po;
+    }
+
+    public PurchaseOrder acceptPurchaseOrder(String id) {
+        PurchaseOrder po = orderRepo.findOne(id);
+        po.accept();
+        return po;
+    }
+    public PurchaseOrder rejectPurchaseOrder(String id) {
+        PurchaseOrder po = orderRepo.findOne(id);
+        po.reject();
         return po;
     }
 

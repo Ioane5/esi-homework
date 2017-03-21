@@ -55,7 +55,12 @@ public class PurchaseOrder {
         return this;
     }
 
-    public PurchaseOrder rejectPO() {
+    public PurchaseOrder accept() {
+        this.status = POStatus.OPEN;
+        return this;
+    }
+
+    public PurchaseOrder reject() {
         this.status = POStatus.REJECTED;
         return this;
     }

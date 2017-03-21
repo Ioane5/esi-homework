@@ -69,6 +69,21 @@ public class SalesRestController {
         return new ResponseEntity<>(newlyCreatePODTO, headers, HttpStatus.CREATED);
     }
 
+    @PostMapping("/orders/{id}/accept")
+    public PurchaseOrderDTO acceptPurchaseOrder(@PathVariable String id) throws Exception {
+        return poAssembler.toResource(salesService.acceptPurchaseOrder(id));
+    }
+
+    @DeleteMapping("/orders/{id}/accept")
+    public PurchaseOrderDTO rejectPurchaseOrder(@PathVariable String id) throws Exception {
+        return poAssembler.toResource(salesService.rejectPurchaseOrder(id));
+    }
+
+    @DeleteMapping("/orders/{id}")
+    public PurchaseOrderDTO closePurchaseOrder(@PathVariable String id) throws Exception {
+        return null;
+    }
+
     @ExceptionHandler(PlantNotAvailableException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public void handlePlantNotAvailableException(PlantNotAvailableException ex) {
@@ -81,6 +96,6 @@ public class SalesRestController {
 
     @ExceptionHandler(PurchaseOrderNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public void handlePOValidationException(PurchaseOrderNotFoundException ex) {
+    public void handlePurchaseOrderNotFoundException(PurchaseOrderNotFoundException ex) {
     }
 }
