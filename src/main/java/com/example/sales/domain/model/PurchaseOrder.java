@@ -55,6 +55,11 @@ public class PurchaseOrder {
         return this;
     }
 
+    public void updateTotalCost(BigDecimal price) {
+        int numberOfWorkingDays = rentalPeriod.getNumberOfWorkingDays();
+        total = price.multiply(BigDecimal.valueOf(numberOfWorkingDays));
+    }
+
     public PurchaseOrder accept() {
         this.status = POStatus.OPEN;
         return this;
@@ -65,12 +70,7 @@ public class PurchaseOrder {
         return this;
     }
 
-    public void updateTotalCost(BigDecimal price) {
-        int numberOfWorkingDays = rentalPeriod.getNumberOfWorkingDays();
-        total = price.multiply(BigDecimal.valueOf(numberOfWorkingDays));
-    }
-
-    public void closePO() {
+    public void close() {
         this.status = POStatus.CLOSED;
     }
 

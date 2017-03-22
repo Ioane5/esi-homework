@@ -76,7 +76,7 @@ public class SalesRestController {
 
     @DeleteMapping("/orders/{id}")
     public PurchaseOrderDTO closePurchaseOrder(@PathVariable String id) throws Exception {
-        return null;
+        return poAssembler.toResource(salesService.closePurchaseOrder(id));
     }
 
     @ExceptionHandler(PlantNotFoundException.class)

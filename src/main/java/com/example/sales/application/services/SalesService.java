@@ -39,7 +39,6 @@ public class SalesService {
             po.addReservationAndOpenPO(pr);
         } catch (PlantNotFoundException e) {
             po.reject();
-            throw e;
         } finally {
             validateAndSavePO(po);
         }
@@ -58,11 +57,20 @@ public class SalesService {
     public PurchaseOrder acceptPurchaseOrder(String id) {
         PurchaseOrder po = orderRepo.findOne(id);
         po.accept();
+        orderRepo.save(po);
         return po;
     }
     public PurchaseOrder rejectPurchaseOrder(String id) {
         PurchaseOrder po = orderRepo.findOne(id);
         po.reject();
+        orderRepo.save(po);
+        return po;
+    }
+
+    public PurchaseOrder closePurchaseOrder(String id) {
+        PurchaseOrder po = orderRepo.findOne(id);
+        po.close();
+        orderRepo.save(po);
         return po;
     }
 

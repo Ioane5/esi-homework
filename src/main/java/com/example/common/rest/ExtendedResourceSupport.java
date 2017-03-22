@@ -11,12 +11,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.hateoas.Link;
 
 @XmlTransient
-public class ResourceSupport extends org.springframework.hateoas.ResourceSupport {
+public class ExtendedResourceSupport extends org.springframework.hateoas.ResourceSupport {
     @XmlElement(name = "_xlink", namespace = Link.ATOM_NAMESPACE)
     @JsonProperty("_xlinks")
     private final List<ExtendedLink> _xlinks;
 
-    public ResourceSupport() {
+    public ExtendedResourceSupport() {
         super();
         this._xlinks = new ArrayList<>();
     }
