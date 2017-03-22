@@ -61,14 +61,10 @@ public class DashboardController {
     @PostMapping("sales/orders")
     public String createOrder(PurchaseOrderDTO orderDTO, Model model) {
         try {
-            PurchaseOrder po = null;
-            try {
-                po = salesService.createPO(
-                        plantInventoryEntryAssembler.fromResource(orderDTO.getPlant()),
-                        businessPeriodAssembler.fromResource(orderDTO.getRentalPeriod())
-                );
-            } catch (PlantNotFoundException e) {
-            }
+            PurchaseOrder po = salesService.createPO(
+                    plantInventoryEntryAssembler.fromResource(orderDTO.getPlant()),
+                    businessPeriodAssembler.fromResource(orderDTO.getRentalPeriod())
+            );
             model.addAttribute("order", purchaseOrderAssembler.toResource(po));
         } catch (POValidationException e) {
             // TODO: handle invalid po data

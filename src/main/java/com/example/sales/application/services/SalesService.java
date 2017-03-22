@@ -30,7 +30,7 @@ public class SalesService {
     @Autowired
     private PurchaseOrderValidator poValidator;
 
-    public PurchaseOrder createPO(PlantInventoryEntry plant, BusinessPeriod period) throws POValidationException, PlantNotFoundException {
+    public PurchaseOrder createPO(PlantInventoryEntry plant, BusinessPeriod period) throws POValidationException {
         PurchaseOrder po = PurchaseOrder.of(IdentifierFactory.nextId(), plant, LocalDate.now(), period);
         validateAndSavePO(po);
 

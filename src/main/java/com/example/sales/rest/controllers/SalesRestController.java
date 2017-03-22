@@ -11,8 +11,10 @@ import com.example.inventory.domain.model.PlantInventoryEntry;
 import com.example.sales.application.dto.PurchaseOrderDTO;
 import com.example.sales.application.services.PurchaseOrderAssembler;
 import com.example.sales.application.services.SalesService;
+import com.example.sales.domain.model.POStatus;
 import com.example.sales.domain.model.PurchaseOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,7 +50,7 @@ public class SalesRestController {
     }
 
     @PostMapping("/orders")
-    public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(@RequestBody PurchaseOrderDTO partialPODTO) throws PlantNotFoundException, POValidationException {
+    public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(@RequestBody PurchaseOrderDTO partialPODTO) throws POValidationException {
         PlantInventoryEntry plant = plantInventoryEntryAssembler.fromResource(partialPODTO.getPlant());
         BusinessPeriod period = businessPeriodAssembler.fromResource(partialPODTO.getRentalPeriod());
 
@@ -56,12 +58,14 @@ public class SalesRestController {
         PurchaseOrderDTO newlyCreatePODTO = poAssembler.toResource(purchaseOrder);
 
         HttpHeaders headers = new HttpHeaders();
+
         try {
             headers.setLocation(new URI(newlyCreatePODTO.getId().getHref()));
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-        return new ResponseEntity<>(newlyCreatePODTO, headers, HttpStatus.CREATED);
+        HttpStatus status = newlyCreatePODTO.getStatus() == POStatus.REJECTED ? HttpStatus.NOT_FOUND : HttpStatus.CREATED;
+        return new ResponseEntity<>(newlyCreatePODTO, headers, status);
     }
 
     @PostMapping("/orders/{id}/accept")
@@ -79,10 +83,10 @@ public class SalesRestController {
         return poAssembler.toResource(salesService.closePurchaseOrder(id));
     }
 
-    @ExceptionHandler(PlantNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public void handlePlantNotFoundException(PlantNotFoundException ex) {
-    }
+//    @ExceptionHandler(PlantNotFoundException.class)
+//    @ResponseStatus(HttpStatus.NOT_FOUND)
+//    public void handlePlantNotFoundException(PlantNotFoundException ex) {
+//    }
 
     @ExceptionHandler(POValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
