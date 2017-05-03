@@ -55,17 +55,22 @@ public class PurchaseOrder {
         return this;
     }
 
-    public PurchaseOrder rejectPO() {
-        this.status = POStatus.REJECTED;
-        return this;
-    }
-
     public void updateTotalCost(BigDecimal price) {
         int numberOfWorkingDays = rentalPeriod.getNumberOfWorkingDays();
         total = price.multiply(BigDecimal.valueOf(numberOfWorkingDays));
     }
 
-    public void closePO() {
+    public PurchaseOrder accept() {
+        this.status = POStatus.OPEN;
+        return this;
+    }
+
+    public PurchaseOrder reject() {
+        this.status = POStatus.REJECTED;
+        return this;
+    }
+
+    public void close() {
         this.status = POStatus.CLOSED;
     }
 

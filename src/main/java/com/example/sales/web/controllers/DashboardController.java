@@ -1,6 +1,8 @@
 package com.example.sales.web.controllers;
 
 import com.example.common.application.exceptions.POValidationException;
+import com.example.common.application.exceptions.PlantNotFoundException;
+import com.example.common.application.exceptions.PurchaseOrderNotFoundException;
 import com.example.common.application.services.BusinessPeriodAssembler;
 import com.example.inventory.application.services.InventoryService;
 import com.example.inventory.application.services.PlantInventoryEntryAssembler;

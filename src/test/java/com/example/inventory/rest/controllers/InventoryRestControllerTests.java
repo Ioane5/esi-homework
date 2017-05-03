@@ -18,6 +18,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
@@ -49,7 +50,7 @@ public class InventoryRestControllerTests {
     @Autowired
     private WebApplicationContext wac;
     private MockMvc mockMvc;
-    @Autowired
+    @Autowired @Qualifier("_halObjectMapper")
     ObjectMapper mapper;
 
     @Before

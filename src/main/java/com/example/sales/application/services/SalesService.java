@@ -38,9 +38,10 @@ public class SalesService {
             PlantReservation pr = inventoryService.reservePlantItem(plant, period, po);
             po.addReservationAndOpenPO(pr);
         } catch (PlantNotFoundException e) {
-            po.rejectPO();
+            po.reject();
+        } finally {
+            validateAndSavePO(po);
         }
-        validateAndSavePO(po);
         return po;
     }
 
@@ -50,6 +51,26 @@ public class SalesService {
             throw new PurchaseOrderNotFoundException();
         }
 
+        return po;
+    }
+
+    public PurchaseOrder acceptPurchaseOrder(String id) {
+        PurchaseOrder po = orderRepo.findOne(id);
+        po.accept();
+        orderRepo.save(po);
+        return po;
+    }
+    public PurchaseOrder rejectPurchaseOrder(String id) {
+        PurchaseOrder po = orderRepo.findOne(id);
+        po.reject();
+        orderRepo.save(po);
+        return po;
+    }
+
+    public PurchaseOrder closePurchaseOrder(String id) {
+        PurchaseOrder po = orderRepo.findOne(id);
+        po.close();
+        orderRepo.save(po);
         return po;
     }
 

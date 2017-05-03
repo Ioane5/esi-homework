@@ -1,9 +1,9 @@
 package com.example.sales.rest.controllers;
 
+import com.example.common.application.exceptions.PlantNotFoundException;
 import com.example.common.application.exceptions.PurchaseOrderNotFoundException;
 
 import com.example.common.application.exceptions.POValidationException;
-import com.example.common.application.exceptions.PlantNotAvailableException;
 import com.example.common.application.services.BusinessPeriodAssembler;
 import com.example.common.domain.model.BusinessPeriod;
 import com.example.inventory.application.services.PlantInventoryEntryAssembler;
@@ -13,8 +13,8 @@ import com.example.sales.application.services.PurchaseOrderAssembler;
 import com.example.sales.application.services.SalesService;
 import com.example.sales.domain.model.POStatus;
 import com.example.sales.domain.model.PurchaseOrder;
-import org.apache.http.util.TextUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,29 +50,43 @@ public class SalesRestController {
     }
 
     @PostMapping("/orders")
-    public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(@RequestBody PurchaseOrderDTO partialPODTO) throws PlantNotAvailableException, POValidationException {
+    public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(@RequestBody PurchaseOrderDTO partialPODTO) throws POValidationException {
         PlantInventoryEntry plant = plantInventoryEntryAssembler.fromResource(partialPODTO.getPlant());
         BusinessPeriod period = businessPeriodAssembler.fromResource(partialPODTO.getRentalPeriod());
 
         PurchaseOrder purchaseOrder = salesService.createPO(plant, period);
-        if (purchaseOrder.getStatus() == POStatus.REJECTED || TextUtils.isEmpty(purchaseOrder.getId())) {
-            throw new PlantNotAvailableException("The Plant is not available");
-        }
         PurchaseOrderDTO newlyCreatePODTO = poAssembler.toResource(purchaseOrder);
 
         HttpHeaders headers = new HttpHeaders();
+
         try {
             headers.setLocation(new URI(newlyCreatePODTO.getId().getHref()));
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-        return new ResponseEntity<>(newlyCreatePODTO, headers, HttpStatus.CREATED);
+        HttpStatus status = newlyCreatePODTO.getStatus() == POStatus.REJECTED ? HttpStatus.NOT_FOUND : HttpStatus.CREATED;
+        return new ResponseEntity<>(newlyCreatePODTO, headers, status);
     }
 
-    @ExceptionHandler(PlantNotAvailableException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public void handlePlantNotAvailableException(PlantNotAvailableException ex) {
+    @PostMapping("/orders/{id}/accept")
+    public PurchaseOrderDTO acceptPurchaseOrder(@PathVariable String id) throws Exception {
+        return poAssembler.toResource(salesService.acceptPurchaseOrder(id));
     }
+
+    @DeleteMapping("/orders/{id}/accept")
+    public PurchaseOrderDTO rejectPurchaseOrder(@PathVariable String id) throws Exception {
+        return poAssembler.toResource(salesService.rejectPurchaseOrder(id));
+    }
+
+    @DeleteMapping("/orders/{id}")
+    public PurchaseOrderDTO closePurchaseOrder(@PathVariable String id) throws Exception {
+        return poAssembler.toResource(salesService.closePurchaseOrder(id));
+    }
+
+//    @ExceptionHandler(PlantNotFoundException.class)
+//    @ResponseStatus(HttpStatus.NOT_FOUND)
+//    public void handlePlantNotFoundException(PlantNotFoundException ex) {
+//    }
 
     @ExceptionHandler(POValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -81,6 +95,6 @@ public class SalesRestController {
 
     @ExceptionHandler(PurchaseOrderNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public void handlePOValidationException(PurchaseOrderNotFoundException ex) {
+    public void handlePurchaseOrderNotFoundException(PurchaseOrderNotFoundException ex) {
     }
 }
