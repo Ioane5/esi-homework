@@ -34,7 +34,7 @@ public class InvoicingFlow {
     IntegrationFlow inboundMail() {
         return IntegrationFlows.from(Mail.imapInboundAdapter(
                 String.format("imaps://%s:%s@imap.gmail.com:993/INBOX", gmailUsername, gmailPassword)
-                ).selectorExpression("subject matches '.*invoice.*'"),
+                ).selectorExpression("subject matches '.*Invoice.*'"),
                 e -> e.autoStartup(true)
                         .poller(Pollers.fixedDelay(40000))
         ).transform("@remittanceAdviceProcessor.extractRemittanceAdvice(payload)")

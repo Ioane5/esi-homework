@@ -78,7 +78,7 @@ public class SalesService {
         orderRepo.save(po);
         Invoice invoice = invoiceService.createInvoice(po);
         try {
-            invoiceService.sendInvoice(invoice, "buildit228@gmail.com");
+            invoiceService.sendInvoice(invoice, "builtit2017@gmail.com");
         } catch (Exception e) {
             System.out.println("Invoice has not been sent");
             e.printStackTrace();

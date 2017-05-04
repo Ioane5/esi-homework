@@ -17,8 +17,11 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.mail.util.ByteArrayDataSource;
+import java.io.IOException;
+import java.util.List;
 
 @Service
 public class InvoiceService {
@@ -42,7 +45,7 @@ public class InvoiceService {
         return invoice;
     }
 
-    public void sendInvoice(Invoice invoice, String email) throws Exception {
+    public void sendInvoice(Invoice invoice, String email) throws IOException, MessagingException {
         JavaMailSender mailSender = new JavaMailSenderImpl();
         String json = mapper.writeValueAsString(
                 InvoiceDTO.of(invoice.getId(), invoice.getOrder().getId(), invoice.getOrder().getTotal(), invoice.getOrder().getPaymentSchedule()));
@@ -67,5 +70,16 @@ public class InvoiceService {
         invoiceRepository.save(invoice);
 
 //        return invoice;
+    }
+
+    public void sendPaymentReminders() {
+        List<Invoice> unpaidInvoices = invoiceRepository.findUnpaidInvoices();
+        unpaidInvoices.forEach(invoice -> {
+            try {
+                sendInvoice(invoice, "builtit2017@gmail.com");
+            } catch (IOException | MessagingException ex1) {
+                throw new RuntimeException(ex1);
+            }
+        });
     }
 }
