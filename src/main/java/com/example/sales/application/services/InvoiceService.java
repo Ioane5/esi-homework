@@ -60,12 +60,12 @@ public class InvoiceService {
         invoicingGateway.sendInvoice(rootMessage);
     }
 
-    public Invoice closeInvoice(RemittanceAdviceDTO remittanceAdviceDTO) {
+    public void closeInvoice(RemittanceAdviceDTO remittanceAdviceDTO) {
         Invoice invoice = invoiceRepository.findOne(remittanceAdviceDTO.getInvoiceId());
 
         invoice.closeInvoice(RemittanceAdvice.of(remittanceAdviceDTO.getId(), remittanceAdviceDTO.getNote()));
         invoiceRepository.save(invoice);
 
-        return invoice;
+//        return invoice;
     }
 }
