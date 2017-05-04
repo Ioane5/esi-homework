@@ -27,17 +27,17 @@ import java.util.List;
 public class InvoiceService {
 
     @Value("${gmail.username}")
-    String gmailUsername;
+    private String gmailUsername;
 
     @Autowired
     private InvoiceRepository invoiceRepository;
 
     @Autowired
-    InvoicingGateway invoicingGateway;
+    private InvoicingGateway invoicingGateway;
 
     @Autowired
     @Qualifier("objectMapper")
-    ObjectMapper mapper;
+    private ObjectMapper mapper;
 
     public Invoice createInvoice(PurchaseOrder order) {
         Invoice invoice = Invoice.of(IdentifierFactory.nextId(), order);

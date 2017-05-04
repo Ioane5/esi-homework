@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.persistence.EntityManager;
 import java.util.List;
 
-public class CustomInvoiceRepositoryImpl implements CustomInvoiceRepository {
+public class InvoiceRepositoryImpl implements CustomInvoiceRepository {
 
     @Autowired
     private EntityManager em;
@@ -15,6 +15,5 @@ public class CustomInvoiceRepositoryImpl implements CustomInvoiceRepository {
     @Override
     public List<Invoice> findUnpaidInvoices() {
         return em.createQuery("SELECT i from Invoice i where i.remittanceAdvice is NULL", Invoice.class).getResultList();
-
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 public class ScheduledPaymentNotifier {
 
     @Autowired
-    InvoiceService invoiceService;
+    private InvoiceService invoiceService;
 
     @Scheduled(cron = "0 0 18 * * FRI")
     public void sendPaymentReminders() {
