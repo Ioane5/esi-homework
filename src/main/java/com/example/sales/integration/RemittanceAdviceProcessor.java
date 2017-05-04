@@ -1,4 +1,4 @@
-package com.example.sales.application.services;
+package com.example.sales.integration;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
