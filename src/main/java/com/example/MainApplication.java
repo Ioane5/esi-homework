@@ -11,30 +11,34 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
+import org.springframework.integration.config.EnableIntegration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
-@EnableHypermediaSupport(type= EnableHypermediaSupport.HypermediaType.HAL)
+@EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
+@EnableIntegration
+@EnableScheduling
 public class MainApplication {
 
-	@Configuration
-	static class ObjectMapperCustomizer {
-		@Autowired
-		@Qualifier("_halObjectMapper")
-		private ObjectMapper springHateoasObjectMapper;
+    @Configuration
+    static class ObjectMapperCustomizer {
+        @Autowired
+        @Qualifier("_halObjectMapper")
+        private ObjectMapper springHateoasObjectMapper;
 
-		@Bean(name = "objectMapper")
-		ObjectMapper objectMapper() {
-			return springHateoasObjectMapper
-					.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-					.configure(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS, false)
-					.configure(SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS, false)
-					.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-					.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
-					.registerModules(new JavaTimeModule());
-		}
-	}
+        @Bean(name = "objectMapper")
+        ObjectMapper objectMapper() {
+            return springHateoasObjectMapper
+                    .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+                    .configure(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS, false)
+                    .configure(SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS, false)
+                    .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+                    .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
+                    .registerModules(new JavaTimeModule());
+        }
+    }
 
-	public static void main(String[] args) {
-		SpringApplication.run(MainApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(MainApplication.class, args);
+    }
 }

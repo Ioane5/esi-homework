@@ -41,3 +41,4 @@
 -- insert into plant_reservation (id, plant_id, maintenance_plan_id, start_date, end_date) values (9, 12, 1, '2017-03-01', '2017-03-25');
 -- insert into plant_reservation (id, plant_id, maintenance_plan_id, start_date, end_date) values (10, 13, 1, '2017-04-01', '2017-04-02');
 --
+-- insert into invoice (id) values (1);
