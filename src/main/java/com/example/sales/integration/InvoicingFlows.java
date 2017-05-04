@@ -12,7 +12,7 @@ import org.springframework.integration.dsl.mail.Mail;
 import org.springframework.integration.dsl.support.Transformers;
 
 @Configuration
-public class InvoicingFlow {
+public class InvoicingFlows {
 
     @Value("${gmail.username}")
     String gmailUsername;
