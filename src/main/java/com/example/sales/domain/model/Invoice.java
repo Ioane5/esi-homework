@@ -32,7 +32,7 @@ public class Invoice {
         return invoice;
     }
 
-    public Invoice closeInvoice(RemittanceAdvice remittanceAdvice) {
+    public Invoice close(RemittanceAdvice remittanceAdvice) {
         this.remittanceAdvice = remittanceAdvice;
         return this;
     }

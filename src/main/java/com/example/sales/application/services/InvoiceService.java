@@ -64,12 +64,9 @@ public class InvoiceService {
     }
 
     public void closeInvoice(RemittanceAdviceDTO remittanceAdviceDTO) {
-        Invoice invoice = invoiceRepository.findOne(remittanceAdviceDTO.getInvoiceId());
-
-        invoice.closeInvoice(RemittanceAdvice.of(remittanceAdviceDTO.getId(), remittanceAdviceDTO.getNote()));
+        RemittanceAdvice advice = RemittanceAdvice.of(remittanceAdviceDTO.getId(), remittanceAdviceDTO.getNote());
+        Invoice invoice = invoiceRepository.findOne(remittanceAdviceDTO.getInvoiceId()).close(advice);
         invoiceRepository.save(invoice);
-
-//        return invoice;
     }
 
     public void sendPaymentReminders() {
