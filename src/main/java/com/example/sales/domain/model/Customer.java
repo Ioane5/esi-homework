@@ -1,9 +1,6 @@
 package com.example.sales.domain.model;
 
-import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -11,6 +8,7 @@ import javax.persistence.Id;
 @Entity
 @Getter
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+@AllArgsConstructor(staticName = "of")
 @EqualsAndHashCode
 public class Customer {
     @Id
