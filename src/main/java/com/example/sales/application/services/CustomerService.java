@@ -1,5 +1,6 @@
 package com.example.sales.application.services;
 
+import com.example.common.application.exceptions.CustomerNotFoundException;
 import com.example.common.infrastructure.IdentifierFactory;
 import com.example.sales.domain.model.Customer;
 import com.example.sales.domain.repository.CustomerRepository;
@@ -17,8 +18,11 @@ public class CustomerService {
         return customerRepo.save(Customer.of(id, token, email));
     }
 
-    public Customer retrieveCustomer(String token) {
-        // TODO add exception if not found
-        return customerRepo.findByToken(token);
+    public Customer retrieveCustomer(String token) throws CustomerNotFoundException {
+        Customer customer = customerRepo.findByToken(token);
+        if (customer == null) {
+            throw new CustomerNotFoundException("Customer with token: " + token + " not found");
+        }
+        return customer;
     }
 }
