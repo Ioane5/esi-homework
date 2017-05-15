@@ -40,7 +40,7 @@ public class SalesService {
 
         try {
             PlantReservation pr = inventoryService.reservePlantItem(plant, period, po);
-            po.addReservationAndOpenPO(pr);
+            po.addReservationAndAcceptPO(pr);
         } catch (PlantNotFoundException e) {
             po.reject();
         } finally {

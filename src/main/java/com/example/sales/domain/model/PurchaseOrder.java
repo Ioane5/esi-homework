@@ -48,7 +48,7 @@ public class PurchaseOrder {
         return po;
     }
 
-    public PurchaseOrder addReservationAndOpenPO(PlantReservation reservation) {
+    public PurchaseOrder addReservationAndAcceptPO(PlantReservation reservation) {
         this.reservation = reservation;
         this.status = POStatus.ACCEPTED;
         updateTotalCost(this.plant.getPrice());
