@@ -56,7 +56,7 @@ public class InvoicingFlows {
     IntegrationFlow processRemittanceAdvices() {
         return IntegrationFlows.from("remittance-processing-channel")
                 .transform(Transformers.fromJson(RemittanceAdviceDTO.class))
-                .handle("invoiceService", "close")
+                .handle("invoiceService", "cancel")
                 .get();
     }
 }

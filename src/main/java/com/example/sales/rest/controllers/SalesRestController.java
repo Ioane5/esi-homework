@@ -1,9 +1,7 @@
 package com.example.sales.rest.controllers;
 
-import com.example.common.application.exceptions.PlantNotFoundException;
-import com.example.common.application.exceptions.PurchaseOrderNotFoundException;
-
 import com.example.common.application.exceptions.POValidationException;
+import com.example.common.application.exceptions.PurchaseOrderNotFoundException;
 import com.example.common.application.services.BusinessPeriodAssembler;
 import com.example.common.domain.model.BusinessPeriod;
 import com.example.common.infrastructure.IdentifierFactory;
@@ -16,15 +14,14 @@ import com.example.sales.domain.model.Customer;
 import com.example.sales.domain.model.POStatus;
 import com.example.sales.domain.model.PurchaseOrder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/sales")
@@ -77,20 +74,15 @@ public class SalesRestController {
         return poAssembler.toResource(salesService.acceptPurchaseOrder(id));
     }
 
+    @DeleteMapping("/orders/{id}")
+    public PurchaseOrderDTO cancelPurchaseOrder(@PathVariable String id) throws Exception {
+        return poAssembler.toResource(salesService.cancelPurchaseOrder(id));
+    }
+
     @DeleteMapping("/orders/{id}/accept")
     public PurchaseOrderDTO rejectPurchaseOrder(@PathVariable String id) throws Exception {
         return poAssembler.toResource(salesService.rejectPurchaseOrder(id));
     }
-
-    @DeleteMapping("/orders/{id}")
-    public PurchaseOrderDTO closePurchaseOrder(@PathVariable String id) throws Exception {
-        return poAssembler.toResource(salesService.closePurchaseOrder(id));
-    }
-
-//    @ExceptionHandler(PlantNotFoundException.class)
-//    @ResponseStatus(HttpStatus.NOT_FOUND)
-//    public void handlePlantNotFoundException(PlantNotFoundException ex) {
-//    }
 
     @ExceptionHandler(POValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

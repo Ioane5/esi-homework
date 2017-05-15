@@ -73,7 +73,7 @@ public class PurchaseOrder {
         return this;
     }
 
-    public PurchaseOrder close() {
+    public PurchaseOrder cancel() {
         this.status = POStatus.INVOICED;
         return this;
     }
