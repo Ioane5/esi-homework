@@ -59,6 +59,7 @@ public class SalesRestController {
         return poAssembler.toResources(salesService.findAllPOs(customer));
     }
 
+    //TODO: handle plant not found exception
     @PostMapping("/orders")
     public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(
             @RequestHeader("Authorization") String token,
@@ -82,6 +83,7 @@ public class SalesRestController {
         return new ResponseEntity<>(newPoDTO, headers, status);
     }
 
+    //TODO: why it returns status as INVOICED?
     @DeleteMapping("/orders/{id}")
     public PurchaseOrderDTO cancelPurchaseOrder(@PathVariable String id) throws Exception {
         return poAssembler.toResource(salesService.cancelPurchaseOrder(id));
