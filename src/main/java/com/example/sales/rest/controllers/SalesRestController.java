@@ -14,6 +14,7 @@ import com.example.sales.domain.model.Customer;
 import com.example.sales.domain.model.POStatus;
 import com.example.sales.domain.model.PurchaseOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -82,6 +85,34 @@ public class SalesRestController {
     @DeleteMapping("/orders/{id}/accept")
     public PurchaseOrderDTO rejectPurchaseOrder(@PathVariable String id) throws Exception {
         return poAssembler.toResource(salesService.rejectPurchaseOrder(id));
+    }
+
+
+    @GetMapping(value = "/dispatches", params = {"date"})
+    public List<PurchaseOrderDTO> fetchDispatches(@RequestParam(value="date") @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate date) throws Exception {
+        List<PurchaseOrder> pos = salesService.findDispatches(date);
+
+        return poAssembler.toResources(pos);
+    }
+
+    @PostMapping(value = "/orders/:id/dispatch")
+    public void dispatchPO(@PathVariable String id) throws PurchaseOrderNotFoundException, POValidationException {
+        salesService.dispatchPO(id);
+    }
+
+    @PostMapping(value = "/orders/:id/delivery/accept")
+    public void acceptDelivery(@PathVariable String id) throws POValidationException, PurchaseOrderNotFoundException {
+        salesService.acceptDelivery(id);
+    }
+
+    @PostMapping(value = "/orders/:id/delivery/reject")
+    public void rejectDelivery(@PathVariable String id) throws POValidationException, PurchaseOrderNotFoundException {
+        salesService.rejectDelivery(id);
+    }
+
+    @PostMapping(value = "/orders/:id/return")
+    public void returnPlant(@PathVariable String id) throws POValidationException, PurchaseOrderNotFoundException {
+        salesService.returnPlant(id);
     }
 
     @ExceptionHandler(POValidationException.class)

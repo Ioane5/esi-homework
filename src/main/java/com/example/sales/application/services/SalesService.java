@@ -11,6 +11,7 @@ import com.example.inventory.domain.model.PlantReservation;
 import com.example.sales.domain.model.POStatus;
 import com.example.sales.domain.model.Customer;
 import com.example.sales.domain.model.Invoice;
+import com.example.sales.domain.model.POStatus;
 import com.example.sales.domain.model.PurchaseOrder;
 import com.example.sales.domain.repository.PurchaseOrderRepository;
 import com.example.sales.domain.validation.PurchaseOrderValidator;
@@ -89,6 +90,10 @@ public class SalesService {
         return orderRepo.findAll();
     }
 
+    public List<PurchaseOrder> findDispatches(LocalDate date) {
+        return orderRepo.findDispatches(date);
+    }
+
     private void validateAndSavePO(PurchaseOrder po) throws POValidationException {
         DataBinder binder = new DataBinder(po);
         binder.addValidators(poValidator);
@@ -100,4 +105,43 @@ public class SalesService {
         }
     }
 
+    public void dispatchPO(String id) throws PurchaseOrderNotFoundException, POValidationException {
+        PurchaseOrder po = findPO(id);
+        if(po.getStatus() == POStatus.ACCEPTED) {
+            po.dispatch();
+            orderRepo.save(po);
+        } else {
+            throw new POValidationException();
+        }
+    }
+
+    public void acceptDelivery(String id) throws PurchaseOrderNotFoundException, POValidationException {
+        PurchaseOrder po = findPO(id);
+        if(po.getStatus() == POStatus.PLANT_DISPATCHED) {
+            po.acceptDelivery();
+            orderRepo.save(po);
+        } else {
+            throw new POValidationException();
+        }
+    }
+
+    public void rejectDelivery(String id) throws PurchaseOrderNotFoundException, POValidationException {
+        PurchaseOrder po = findPO(id);
+        if(po.getStatus() == POStatus.PLANT_DISPATCHED) {
+            po.rejectDelivery();
+            orderRepo.save(po);
+        } else {
+            throw new POValidationException();
+        }
+    }
+
+    public void returnPlant(String id) throws PurchaseOrderNotFoundException, POValidationException {
+        PurchaseOrder po = findPO(id);
+        if(po.getStatus() == POStatus.PLANT_DELIVERED) {
+            po.returnPlant();
+            orderRepo.save(po);
+        } else {
+            throw new POValidationException();
+        }
+    }
 }
