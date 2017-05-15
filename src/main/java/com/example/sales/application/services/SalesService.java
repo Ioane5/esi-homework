@@ -9,6 +9,8 @@ import com.example.inventory.application.services.InventoryService;
 import com.example.inventory.domain.model.PlantInventoryEntry;
 import com.example.inventory.domain.model.PlantReservation;
 import com.example.sales.domain.model.POStatus;
+import com.example.sales.domain.model.Customer;
+import com.example.sales.domain.model.Invoice;
 import com.example.sales.domain.model.PurchaseOrder;
 import com.example.sales.domain.repository.PurchaseOrderRepository;
 import com.example.sales.domain.validation.PurchaseOrderValidator;
@@ -35,8 +37,8 @@ public class SalesService {
     @Autowired
     private InvoiceService invoiceService;
 
-    public PurchaseOrder createPO(PlantInventoryEntry plant, BusinessPeriod period) throws POValidationException {
-        PurchaseOrder po = PurchaseOrder.of(IdentifierFactory.nextId(), plant, LocalDate.now(), period);
+    public PurchaseOrder createPO(Customer customer, PlantInventoryEntry plant, BusinessPeriod period) throws POValidationException {
+        PurchaseOrder po = PurchaseOrder.of(IdentifierFactory.nextId(), customer, plant, LocalDate.now(), period);
         validateAndSavePO(po);
 
         try {
