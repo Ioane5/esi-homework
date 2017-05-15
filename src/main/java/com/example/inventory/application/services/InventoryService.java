@@ -37,4 +37,8 @@ public class InventoryService {
     public List<PlantInventoryEntry> findAvailablePlants(String name, BusinessPeriod businessPeriod) {
         return inventoryRepo.findAvailablePlants(name, businessPeriod);
     }
+
+    public boolean canChangeReservationPeriod(PlantReservation reservation, BusinessPeriod newPeriod) {
+        return inventoryRepo.canChangeReservationPeriod(reservation, newPeriod);
+    }
 }

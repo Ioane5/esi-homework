@@ -10,8 +10,6 @@ import com.example.inventory.domain.model.PlantInventoryEntry;
 import com.example.inventory.domain.model.PlantReservation;
 import com.example.sales.domain.model.POStatus;
 import com.example.sales.domain.model.Customer;
-import com.example.sales.domain.model.Invoice;
-import com.example.sales.domain.model.POStatus;
 import com.example.sales.domain.model.PurchaseOrder;
 import com.example.sales.domain.repository.PurchaseOrderRepository;
 import com.example.sales.domain.validation.PurchaseOrderValidator;
@@ -21,6 +19,7 @@ import org.springframework.validation.DataBinder;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -143,5 +142,42 @@ public class SalesService {
         } else {
             throw new POValidationException();
         }
+    }
+
+    public PurchaseOrder resubmitPO(String id, BusinessPeriod newPeriod) throws PurchaseOrderNotFoundException, POValidationException {
+        PurchaseOrder purchaseOrder = findPO(id);
+
+        if (!isPOResubmissionEnabled(purchaseOrder, newPeriod)) {
+            throw new POValidationException();
+        }
+
+        if(inventoryService.canChangeReservationPeriod(purchaseOrder.getReservation(), newPeriod)) {
+            purchaseOrder.updateRentalPeriod(newPeriod);
+            validateAndSavePO(purchaseOrder);
+        } else {
+            throw new POValidationException();
+        }
+        return purchaseOrder;
+    }
+
+    private boolean isPOResubmissionEnabled(PurchaseOrder purchaseOrder, BusinessPeriod requestedPeriod) {
+        BusinessPeriod currentPeriod = purchaseOrder.getRentalPeriod();
+
+        boolean startDateChanged = !currentPeriod.getStartDate().isEqual(requestedPeriod.getStartDate());
+        boolean endDateChanged = !currentPeriod.getEndDate().isEqual(requestedPeriod.getEndDate());
+
+        List<POStatus> acceptedStatuses;
+        if (startDateChanged && endDateChanged) {
+            acceptedStatuses = Arrays.asList(POStatus.PENDING, POStatus.ACCEPTED, POStatus.REJECTED);
+            // If start date is changed, it should be after present time :)
+            if (requestedPeriod.getStartDate().isAfter(LocalDate.now())) {
+                return false;
+            }
+        } else if(!startDateChanged && endDateChanged){
+            acceptedStatuses = Collections.singletonList(POStatus.PLANT_DELIVERED);
+        } else {
+            return false;
+        }
+        return acceptedStatuses.contains(purchaseOrder.getStatus());
     }
 }

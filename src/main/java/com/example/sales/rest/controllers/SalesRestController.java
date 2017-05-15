@@ -115,6 +115,11 @@ public class SalesRestController {
         salesService.returnPlant(id);
     }
 
+    @PostMapping(value = "/orders/:id/resubmit")
+    public PurchaseOrderDTO resubmitPO(@PathVariable String id, BusinessPeriod newPeriod) throws POValidationException, PurchaseOrderNotFoundException {
+        return poAssembler.toResource(salesService.resubmitPO(id, newPeriod));
+    }
+
     @ExceptionHandler(POValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public void handlePOValidationException(POValidationException ex) {
