@@ -18,6 +18,6 @@ public class RemittanceAdviceProcessor {
                 return IOUtils.toString(bodyPart.getInputStream(), "UTF-8");
             }
         }
-        throw new Exception("oops");
+        throw new Exception("remittance advice can't be parsed");
     }
 }
