@@ -77,7 +77,7 @@ public class SalesRestController {
     }
 
     @DeleteMapping("/orders/{id}")
-    public PurchaseOrderDTO closePurchaseOrder(@PathVariable String id) throws Exception {
+    public PurchaseOrderDTO cancelPurchaseOrder(@PathVariable String id) throws Exception {
         PurchaseOrder po = salesService.findPO(id);
         List<POStatus> acceptedStatuses = Arrays.asList(POStatus.PENDING, POStatus.ACCEPTED);
         if(acceptedStatuses.contains(po.getStatus())){
