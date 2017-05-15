@@ -85,7 +85,7 @@ public class SalesRestController {
         if(acceptedStatuses.contains(po.getStatus())){
             return poAssembler.toResource(salesService.closePurchaseOrder(id));
         }else{
-            throw new Exception("Plant has been already dispatched");
+            throw new POValidationException();
         }
     }
 
@@ -94,6 +94,7 @@ public class SalesRestController {
 //    public void handlePlantNotFoundException(PlantNotFoundException ex) {
 //    }
 
+
     @GetMapping(value = "/dispatches", params = {"date"})
     public List<PurchaseOrderDTO> fetchDispatches(@RequestParam(value="date") @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate date) throws Exception {
         System.out.println(date);
@@ -101,6 +102,29 @@ public class SalesRestController {
 
         return poAssembler.toResources(pos);
     }
+
+    @PostMapping(value = "/orders/:id/dispatch")
+    public void dispatchPO(@PathVariable String id) throws PurchaseOrderNotFoundException, POValidationException {
+        salesService.dispatchPO(id);
+    }
+
+    @PostMapping(value = "/orders/:id/delivery/accept")
+    public void acceptDelivery(@PathVariable String id) throws POValidationException, PurchaseOrderNotFoundException {
+        salesService.acceptDelivery(id);
+    }
+
+    @PostMapping(value = "/orders/:id/delivery/reject")
+    public void rejectDelivery(@PathVariable String id) throws POValidationException, PurchaseOrderNotFoundException {
+        salesService.rejectDelivery(id);
+    }
+
+    @PostMapping(value = "/orders/:id/return")
+    public void returnPlant(@PathVariable String id) throws POValidationException, PurchaseOrderNotFoundException {
+        salesService.returnPlant(id);
+    }
+
+
+
 
 
     @ExceptionHandler(POValidationException.class)

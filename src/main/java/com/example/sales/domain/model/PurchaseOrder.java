@@ -80,4 +80,18 @@ public class PurchaseOrder {
         return this;
     }
 
+    public PurchaseOrder acceptDelivery() {
+        this.status = POStatus.PLANT_DELIVERED;
+        return this;
+    }
+
+    public PurchaseOrder rejectDelivery() {
+        this.status = POStatus.PLANT_REJECTED_BY_CUSTOMER;
+        return this;
+    }
+
+    public PurchaseOrder returnPlant() {
+        this.status = POStatus.PLANT_RETURNED;
+        return this;
+    }
 }
