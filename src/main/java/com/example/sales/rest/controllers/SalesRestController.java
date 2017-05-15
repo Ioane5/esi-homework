@@ -55,32 +55,14 @@ public class SalesRestController {
     }
 
     @PostMapping("/orders")
-    public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(
+    public PurchaseOrderDTO createPurchaseOrder(
             @RequestHeader("Authorization") String token,
             @RequestBody PORequestDTO poRequestDTO)
             throws POValidationException {
 
         Customer customer = customerService.retrieveCustomer(token);
-        PlantInventoryEntry plant = plantInventoryEntryAssembler.fromResource(poRequestDTO.getPlant());
         BusinessPeriod period = businessPeriodAssembler.fromResource(poRequestDTO.getRentalPeriod());
-        PurchaseOrderDTO poDTO = poAssembler.toResource(salesService.createPO(customer, plant, period));
-
-        HttpHeaders headers = new HttpHeaders();
-
-        try {
-            headers.setLocation(new URI(poDTO.getId().getHref()));
-        } catch (URISyntaxException ignored) {
-        }
-        return new ResponseEntity<>(poDTO, headers, convertToHttpStatus(poDTO.getStatus()));
-    }
-
-    private HttpStatus convertToHttpStatus(POStatus status) {
-        switch (status) {
-            case REJECTED:
-                return HttpStatus.NOT_FOUND;
-            default:
-                return HttpStatus.CREATED;
-        }
+        return poAssembler.toResource(salesService.createPO(customer, poRequestDTO.getPlantId(), period));
     }
 
     @PostMapping("/orders/{id}/accept")
