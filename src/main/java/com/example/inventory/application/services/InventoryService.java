@@ -19,7 +19,7 @@ public class InventoryService {
     @Autowired
     private InventoryRepository inventoryRepo;
     @Autowired
-    PlantReservationRepository plantReservationRepository;
+    private PlantReservationRepository plantReservationRepository;
 
     public PlantReservation reservePlantItem(PlantInventoryEntry entry, BusinessPeriod period, PurchaseOrder po) throws PlantNotFoundException {
         List<PlantInventoryItem> items = inventoryRepo.findAvailablePlantItemsInBusinessPeriod(entry.getId(), period);

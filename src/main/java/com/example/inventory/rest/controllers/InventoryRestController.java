@@ -19,9 +19,9 @@ import java.util.List;
 @RequestMapping("/api/inventory")
 public class InventoryRestController {
     @Autowired
-    InventoryService inventoryService;
+    private InventoryService inventoryService;
     @Autowired
-    PlantInventoryEntryAssembler plantInventoryEntryAssembler;
+    private PlantInventoryEntryAssembler plantInventoryEntryAssembler;
 
     @GetMapping("/plants")
     public List<PlantInventoryEntryDTO> findAvailablePlants(

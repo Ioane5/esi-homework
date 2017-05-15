@@ -48,9 +48,9 @@ public class PurchaseOrder {
         return po;
     }
 
-    public PurchaseOrder addReservationAndOpenPO(PlantReservation reservation) {
+    public PurchaseOrder addReservationAndAcceptPO(PlantReservation reservation) {
         this.reservation = reservation;
-        this.status = POStatus.OPEN;
+        this.status = POStatus.ACCEPTED;
         updateTotalCost(this.plant.getPrice());
         return this;
     }
@@ -61,7 +61,7 @@ public class PurchaseOrder {
     }
 
     public PurchaseOrder accept() {
-        this.status = POStatus.OPEN;
+        this.status = POStatus.ACCEPTED;
         return this;
     }
 
@@ -70,8 +70,9 @@ public class PurchaseOrder {
         return this;
     }
 
-    public void close() {
-        this.status = POStatus.CLOSED;
+    public PurchaseOrder close() {
+        this.status = POStatus.INVOICED;
+        return this;
     }
 
 }

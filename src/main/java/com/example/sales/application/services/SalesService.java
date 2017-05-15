@@ -40,7 +40,7 @@ public class SalesService {
 
         try {
             PlantReservation pr = inventoryService.reservePlantItem(plant, period, po);
-            po.addReservationAndOpenPO(pr);
+            po.addReservationAndAcceptPO(pr);
         } catch (PlantNotFoundException e) {
             po.reject();
         } finally {
@@ -59,22 +59,19 @@ public class SalesService {
     }
 
     public PurchaseOrder acceptPurchaseOrder(String id) {
-        PurchaseOrder po = orderRepo.findOne(id);
-        po.accept();
+        PurchaseOrder po = orderRepo.findOne(id).accept();
         orderRepo.save(po);
         return po;
     }
 
     public PurchaseOrder rejectPurchaseOrder(String id) {
-        PurchaseOrder po = orderRepo.findOne(id);
-        po.reject();
+        PurchaseOrder po = orderRepo.findOne(id).reject();
         orderRepo.save(po);
         return po;
     }
 
     public PurchaseOrder closePurchaseOrder(String id) {
-        PurchaseOrder po = orderRepo.findOne(id);
-        po.close();
+        PurchaseOrder po = orderRepo.findOne(id).close();
         orderRepo.save(po);
         Invoice invoice = invoiceService.createInvoice(po);
         try {

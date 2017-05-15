@@ -100,38 +100,38 @@ public class PurchaseOrderValidatorTest {
 
     @Test
     public void testValidateOnValidOpenPO() throws Exception {
-        order.addReservationAndOpenPO(validReservation);
+        order.addReservationAndAcceptPO(validReservation);
         assertFalse(getValidationErrors(order).hasErrors());
     }
 
     @Test
     public void testValidateOnValidClosedPO() throws Exception {
-        order.addReservationAndOpenPO(validReservation).close();
+        order.addReservationAndAcceptPO(validReservation).close();
         assertFalse(getValidationErrors(order).hasErrors());
     }
 
     @Test
     public void testValidateOnInvalidOpenPO() throws Exception {
-        order.addReservationAndOpenPO(invalidReservation);
+        order.addReservationAndAcceptPO(invalidReservation);
         assertEquals(1, getValidationErrors(order).getErrorCount());
     }
 
     @Test
     public void testValidateOnInvalidClosedPO() throws Exception {
-        order.addReservationAndOpenPO(invalidReservation).close();
+        order.addReservationAndAcceptPO(invalidReservation).close();
         assertEquals(1, getValidationErrors(order).getErrorCount());
     }
 
     @Test
     public void testValidateTotalCostOfOpenPO() throws Exception {
-        order.addReservationAndOpenPO(validReservation);
+        order.addReservationAndAcceptPO(validReservation);
         order.updateTotalCost(BigDecimal.ZERO);
         assertEquals(1, getValidationErrors(order).getErrorCount());
     }
 
     @Test
     public void testValidateTotalCostOfClosedPO() throws Exception {
-        order.addReservationAndOpenPO(validReservation).close();
+        order.addReservationAndAcceptPO(validReservation).close();
         order.updateTotalCost(BigDecimal.ZERO);
         assertEquals(1, getValidationErrors(order).getErrorCount());
     }
