@@ -49,16 +49,12 @@ public class SalesRestControllerTests {
     @Autowired
     @Qualifier("_halObjectMapper")
     private ObjectMapper mapper;
-
     @Autowired
     private PlantInventoryEntryAssembler plantInventoryEntryAssembler;
-
     @Autowired
     private WebApplicationContext wac;
-
     @Autowired
     private PurchaseOrderRepository purchaseOrderRepository;
-
     @Autowired
     private PlantInventoryEntryRepository plantInventoryEntryRepository;
 
@@ -78,6 +74,7 @@ public class SalesRestControllerTests {
         order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now().plusDays(2)));
 
         mockMvc.perform(post("/api/sales/orders")
+                .header("Authorization", "token")
                 .content(mapper.writeValueAsString(order))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
@@ -93,6 +90,7 @@ public class SalesRestControllerTests {
         order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now().plusDays(2)));
 
         mockMvc.perform(post("/api/sales/orders")
+                .header("Authorization", "token")
                 .content(mapper.writeValueAsString(order))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
@@ -139,8 +137,18 @@ public class SalesRestControllerTests {
     }
 
     private void setUpOrders() {
-        PurchaseOrder po = PurchaseOrder.of("1", null, plantInventoryEntryRepository.findOne("1"), LocalDate.now(), BusinessPeriod.of(LocalDate.now(), LocalDate.now()));
-        purchaseOrderRepository.save(po);
+        purchaseOrderRepository.save(
+                PurchaseOrder.of(
+                        "1",
+                        null,
+                        plantInventoryEntryRepository.findOne("1"),
+                        LocalDate.now(),
+                        BusinessPeriod.of(
+                                LocalDate.now(),
+                                LocalDate.now()
+                        )
+                )
+        );
     }
 }
 
