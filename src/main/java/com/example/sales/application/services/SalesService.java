@@ -50,8 +50,8 @@ public class SalesService {
         return po;
     }
 
-    public PurchaseOrder findPO(String id) throws PurchaseOrderNotFoundException {
-        PurchaseOrder po = orderRepo.findOne(id);
+    public PurchaseOrder findPO(String id, Customer customer) throws PurchaseOrderNotFoundException {
+        PurchaseOrder po = orderRepo.findByIdAndCustomer(id, customer);
         if (po == null) {
             throw new PurchaseOrderNotFoundException();
         }
@@ -84,8 +84,8 @@ public class SalesService {
         return po;
     }
 
-    public List<PurchaseOrder> findAllPOs() {
-        return orderRepo.findAll();
+    public List<PurchaseOrder> findAllPOs(Customer customer) {
+        return orderRepo.findAllByCustomer(customer);
     }
 
     private void validateAndSavePO(PurchaseOrder po) throws POValidationException {

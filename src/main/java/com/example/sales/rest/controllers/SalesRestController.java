@@ -40,14 +40,16 @@ public class SalesRestController {
 
 
     @GetMapping("/orders/{id}")
-
-    public PurchaseOrderDTO fetchPurchaseOrder(@PathVariable("id") String id) throws PurchaseOrderNotFoundException {
-        return poAssembler.toResource(salesService.findPO(id));
+    public PurchaseOrderDTO fetchPurchaseOrder(@RequestHeader("Authorization") String token,
+                                               @PathVariable("id") String id) throws PurchaseOrderNotFoundException {
+        Customer customer = customerService.retrieveCustomer(token);
+        return poAssembler.toResource(salesService.findPO(id, customer));
     }
 
     @GetMapping("/orders")
-    public List<PurchaseOrderDTO> fetchPurchaseOrders() {
-        return poAssembler.toResources(salesService.findAllPOs());
+    public List<PurchaseOrderDTO> fetchPurchaseOrders(@RequestHeader("Authorization") String token) {
+        Customer customer = customerService.retrieveCustomer(token);
+        return poAssembler.toResources(salesService.findAllPOs(customer));
     }
 
     @PostMapping("/orders")
