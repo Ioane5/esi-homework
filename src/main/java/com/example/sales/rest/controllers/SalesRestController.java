@@ -12,6 +12,7 @@ import com.example.sales.application.services.SalesService;
 import com.example.sales.domain.model.POStatus;
 import com.example.sales.domain.model.PurchaseOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -91,6 +93,15 @@ public class SalesRestController {
 //    @ResponseStatus(HttpStatus.NOT_FOUND)
 //    public void handlePlantNotFoundException(PlantNotFoundException ex) {
 //    }
+
+    @GetMapping(value = "/dispatches", params = {"date"})
+    public List<PurchaseOrderDTO> fetchDispatches(@RequestParam(value="date") @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate date) throws Exception {
+        System.out.println(date);
+        List<PurchaseOrder> pos = salesService.findDispatches(date);
+
+        return poAssembler.toResources(pos);
+    }
+
 
     @ExceptionHandler(POValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

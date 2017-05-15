@@ -75,4 +75,9 @@ public class PurchaseOrder {
         return this;
     }
 
+    public PurchaseOrder dispatch() {
+        this.status = POStatus.PLANT_DISPATCHED;
+        return this;
+    }
+
 }
