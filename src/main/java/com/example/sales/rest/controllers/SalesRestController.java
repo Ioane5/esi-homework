@@ -7,13 +7,13 @@ import com.example.common.domain.model.BusinessPeriod;
 import com.example.inventory.application.services.PlantInventoryEntryAssembler;
 import com.example.inventory.domain.model.PlantInventoryEntry;
 import com.example.sales.application.dto.CustomerDTO;
+import com.example.sales.application.dto.PORequestDTO;
 import com.example.sales.application.dto.PurchaseOrderDTO;
 import com.example.sales.application.services.CustomerService;
 import com.example.sales.application.services.PurchaseOrderAssembler;
 import com.example.sales.application.services.SalesService;
 import com.example.sales.domain.model.Customer;
 import com.example.sales.domain.model.POStatus;
-import com.example.sales.domain.model.PurchaseOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -57,24 +57,30 @@ public class SalesRestController {
     @PostMapping("/orders")
     public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(
             @RequestHeader("Authorization") String token,
-            @RequestBody PurchaseOrderDTO partialPODTO)
+            @RequestBody PORequestDTO poRequestDTO)
             throws POValidationException {
-        PlantInventoryEntry plant = plantInventoryEntryAssembler.fromResource(partialPODTO.getPlant());
-        BusinessPeriod period = businessPeriodAssembler.fromResource(partialPODTO.getRentalPeriod());
-        Customer customer = customerService.retrieveCustomer(token);
 
-        PurchaseOrder purchaseOrder = salesService.createPO(customer, plant, period);
-        PurchaseOrderDTO newPoDTO = poAssembler.toResource(purchaseOrder);
+        Customer customer = customerService.retrieveCustomer(token);
+        PlantInventoryEntry plant = plantInventoryEntryAssembler.fromResource(poRequestDTO.getPlant());
+        BusinessPeriod period = businessPeriodAssembler.fromResource(poRequestDTO.getRentalPeriod());
+        PurchaseOrderDTO poDTO = poAssembler.toResource(salesService.createPO(customer, plant, period));
 
         HttpHeaders headers = new HttpHeaders();
 
         try {
-            headers.setLocation(new URI(newPoDTO.getId().getHref()));
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
+            headers.setLocation(new URI(poDTO.getId().getHref()));
+        } catch (URISyntaxException ignored) {
         }
-        HttpStatus status = newPoDTO.getStatus() == POStatus.REJECTED ? HttpStatus.NOT_FOUND : HttpStatus.CREATED;
-        return new ResponseEntity<>(newPoDTO, headers, status);
+        return new ResponseEntity<>(poDTO, headers, convertToHttpStatus(poDTO.getStatus()));
+    }
+
+    private HttpStatus convertToHttpStatus(POStatus status) {
+        switch (status) {
+            case REJECTED:
+                return HttpStatus.NOT_FOUND;
+            default:
+                return HttpStatus.CREATED;
+        }
     }
 
     @PostMapping("/orders/{id}/accept")
