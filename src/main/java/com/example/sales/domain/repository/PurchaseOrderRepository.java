@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, String> {
+public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, String>, CustomPurchaseOrderRepository {
 
     PurchaseOrder findByIdAndCustomer(String id, Customer customer);
 

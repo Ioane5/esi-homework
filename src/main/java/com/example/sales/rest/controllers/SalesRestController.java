@@ -15,6 +15,7 @@ import com.example.sales.domain.model.Customer;
 import com.example.sales.domain.model.POStatus;
 import com.example.sales.domain.model.PurchaseOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -62,17 +64,17 @@ public class SalesRestController {
         Customer customer = customerService.retrieveCustomer(token);
 
         PurchaseOrder purchaseOrder = salesService.createPO(customer, plant, period);
-        PurchaseOrderDTO newlyCreatePODTO = poAssembler.toResource(purchaseOrder);
+        PurchaseOrderDTO newPoDTO = poAssembler.toResource(purchaseOrder);
 
         HttpHeaders headers = new HttpHeaders();
 
         try {
-            headers.setLocation(new URI(newlyCreatePODTO.getId().getHref()));
+            headers.setLocation(new URI(newPoDTO.getId().getHref()));
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-        HttpStatus status = newlyCreatePODTO.getStatus() == POStatus.REJECTED ? HttpStatus.NOT_FOUND : HttpStatus.CREATED;
-        return new ResponseEntity<>(newlyCreatePODTO, headers, status);
+        HttpStatus status = newPoDTO.getStatus() == POStatus.REJECTED ? HttpStatus.NOT_FOUND : HttpStatus.CREATED;
+        return new ResponseEntity<>(newPoDTO, headers, status);
     }
 
     @PostMapping("/orders/{id}/accept")
@@ -80,14 +82,20 @@ public class SalesRestController {
         return poAssembler.toResource(salesService.acceptPurchaseOrder(id));
     }
 
+    @DeleteMapping("/orders/{id}")
+    public PurchaseOrderDTO cancelPurchaseOrder(@PathVariable String id) throws Exception {
+        return poAssembler.toResource(salesService.cancelPurchaseOrder(id));
+    }
+
     @DeleteMapping("/orders/{id}/accept")
     public PurchaseOrderDTO rejectPurchaseOrder(@PathVariable String id) throws Exception {
         return poAssembler.toResource(salesService.rejectPurchaseOrder(id));
     }
 
-    @DeleteMapping("/orders/{id}")
-    public PurchaseOrderDTO closePurchaseOrder(@PathVariable String id) throws Exception {
-        return poAssembler.toResource(salesService.closePurchaseOrder(id));
+    @GetMapping(value = "/dispatches", params = {"date"})
+    public List<PurchaseOrderDTO> fetchDispatches(
+            @RequestParam(value = "date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) throws Exception {
+        return poAssembler.toResources(salesService.findDispatches(date));
     }
 
     @PostMapping("/customers")
@@ -96,10 +104,25 @@ public class SalesRestController {
         return CustomerDTO.of(customer.getId(), customer.getToken(), customer.getEmail());
     }
 
-//    @ExceptionHandler(PlantNotFoundException.class)
-//    @ResponseStatus(HttpStatus.NOT_FOUND)
-//    public void handlePlantNotFoundException(PlantNotFoundException ex) {
-//    }
+    @PostMapping(value = "/orders/:id/dispatch")
+    public void dispatchPO(@PathVariable String id) throws PurchaseOrderNotFoundException, POValidationException {
+        salesService.dispatchPO(id);
+    }
+
+    @PostMapping(value = "/orders/:id/delivery/accept")
+    public void acceptDelivery(@PathVariable String id) throws POValidationException, PurchaseOrderNotFoundException {
+        salesService.acceptDelivery(id);
+    }
+
+    @PostMapping(value = "/orders/:id/delivery/reject")
+    public void rejectDelivery(@PathVariable String id) throws POValidationException, PurchaseOrderNotFoundException {
+        salesService.rejectDelivery(id);
+    }
+
+    @PostMapping(value = "/orders/:id/return")
+    public void returnPlant(@PathVariable String id) throws POValidationException, PurchaseOrderNotFoundException {
+        salesService.returnPlant(id);
+    }
 
     @ExceptionHandler(POValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
