@@ -40,20 +40,21 @@ public class PurchaseOrderAssembler extends ResourceAssemblerSupport<PurchaseOrd
         try {
             switch (dto.getStatus()) {
                 case PENDING:
-                    dto.add(new ExtendedLink(
-                            linkTo(methodOn(SalesRestController.class)
-                                    .acceptPurchaseOrder(dto.get_id())).toString(),
-                            "accept", POST));
-                    dto.add(new ExtendedLink(
-                            linkTo(methodOn(SalesRestController.class)
-                                    .rejectPurchaseOrder(dto.get_id())).toString(),
-                            "reject", DELETE));
+//                    TODO revisit xlinks
+//                    dto.add(new ExtendedLink(
+//                            linkTo(methodOn(SalesRestController.class)
+//                                    .acceptPurchaseOrder(dto.get_id())).toString(),
+//                            "accept", POST));
+//                    dto.add(new ExtendedLink(
+//                            linkTo(methodOn(SalesRestController.class)
+//                                    .rejectPurchaseOrder(dto.get_id())).toString(),
+//                            "reject", DELETE));
                     break;
                 case ACCEPTED:
-                    dto.add(new ExtendedLink(
-                            linkTo(methodOn(SalesRestController.class)
-                                    .cancelPurchaseOrder(dto.get_id())).toString(),
-                            "cancel", DELETE));
+//                    dto.add(new ExtendedLink(
+//                            linkTo(methodOn(SalesRestController.class)
+//                                    .cancelPurchaseOrder(dto.get_id())).toString(),
+//                            "cancel", DELETE));
                 default:
                     break;
             }

@@ -15,10 +15,10 @@ public class CustomerService {
         String id = IdentifierFactory.nextId();
         String token = IdentifierFactory.nextId();
         return customerRepo.save(Customer.of(id, token, email));
-
     }
 
     public Customer retrieveCustomer(String token) {
+        // TODO add exception if not found
         return customerRepo.findByToken(token);
     }
 }

@@ -9,6 +9,7 @@ import com.example.inventory.application.services.InventoryService;
 import com.example.inventory.domain.model.PlantInventoryEntry;
 import com.example.inventory.domain.model.PlantReservation;
 import com.example.sales.domain.model.Customer;
+import com.example.sales.domain.model.Invoice;
 import com.example.sales.domain.model.POStatus;
 import com.example.sales.domain.model.PurchaseOrder;
 import com.example.sales.domain.repository.PurchaseOrderRepository;
@@ -144,6 +145,14 @@ public class SalesService {
         if (po.getStatus() == POStatus.PLANT_DELIVERED) {
             po.returnPlant();
             orderRepo.save(po);
+
+            Invoice invoice = invoiceService.createInvoice(po);
+            try {
+                invoiceService.sendInvoice(invoice, po.getCustomer().getEmail());
+            } catch (Exception e) {
+                System.err.println("Invoice has not been sent");
+                e.printStackTrace();
+            }
         } else {
             throw new POValidationException();
         }

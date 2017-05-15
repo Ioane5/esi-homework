@@ -40,6 +40,11 @@ public class SalesRestController {
     @Autowired
     private BusinessPeriodAssembler businessPeriodAssembler;
 
+    @PostMapping("/customers")
+    public CustomerDTO createCustomer(@RequestBody CustomerDTO partialCustomerDto) throws Exception {
+        Customer customer = customerService.createCustomer(partialCustomerDto.getEmail());
+        return CustomerDTO.of(customer.getId(), customer.getToken(), customer.getEmail());
+    }
 
     @GetMapping("/orders/{id}")
     public PurchaseOrderDTO fetchPurchaseOrder(@RequestHeader("Authorization") String token,
@@ -77,53 +82,40 @@ public class SalesRestController {
         return new ResponseEntity<>(newPoDTO, headers, status);
     }
 
-    @PostMapping("/orders/{id}/accept")
-    public PurchaseOrderDTO acceptPurchaseOrder(@PathVariable String id) throws Exception {
-        return poAssembler.toResource(salesService.acceptPurchaseOrder(id));
-    }
-
     @DeleteMapping("/orders/{id}")
     public PurchaseOrderDTO cancelPurchaseOrder(@PathVariable String id) throws Exception {
         return poAssembler.toResource(salesService.cancelPurchaseOrder(id));
     }
 
-    @DeleteMapping("/orders/{id}/accept")
-    public PurchaseOrderDTO rejectPurchaseOrder(@PathVariable String id) throws Exception {
-        return poAssembler.toResource(salesService.rejectPurchaseOrder(id));
-    }
-
+    //TODO: rewrite it to another dto and why it is in sales?
     @GetMapping(value = "/dispatches", params = {"date"})
     public List<PurchaseOrderDTO> fetchDispatches(
             @RequestParam(value = "date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) throws Exception {
         return poAssembler.toResources(salesService.findDispatches(date));
     }
 
-    @PostMapping("/customers")
-    public CustomerDTO createCustomer(@RequestBody CustomerDTO partialCustomerDto) throws Exception {
-        Customer customer = customerService.createCustomer(partialCustomerDto.getEmail());
-        return CustomerDTO.of(customer.getId(), customer.getToken(), customer.getEmail());
-    }
-
-    @PostMapping(value = "/orders/:id/dispatch")
+    //TODO: should it be void?
+    @PostMapping(value = "/orders/{id}/dispatch")
     public void dispatchPO(@PathVariable String id) throws PurchaseOrderNotFoundException, POValidationException {
         salesService.dispatchPO(id);
     }
 
-    @PostMapping(value = "/orders/:id/delivery/accept")
+    @PostMapping(value = "/orders/{id}/delivery/accept")
     public void acceptDelivery(@PathVariable String id) throws POValidationException, PurchaseOrderNotFoundException {
         salesService.acceptDelivery(id);
     }
 
-    @PostMapping(value = "/orders/:id/delivery/reject")
+    @PostMapping(value = "/orders/{id}/delivery/reject")
     public void rejectDelivery(@PathVariable String id) throws POValidationException, PurchaseOrderNotFoundException {
         salesService.rejectDelivery(id);
     }
 
-    @PostMapping(value = "/orders/:id/return")
+    @PostMapping(value = "/orders/{id}/return")
     public void returnPlant(@PathVariable String id) throws POValidationException, PurchaseOrderNotFoundException {
         salesService.returnPlant(id);
     }
 
+    //TODO: revisit exceptions
     @ExceptionHandler(POValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public void handlePOValidationException(POValidationException ex) {
