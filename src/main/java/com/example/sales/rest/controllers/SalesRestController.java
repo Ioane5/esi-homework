@@ -97,7 +97,6 @@ public class SalesRestController {
 
     @GetMapping(value = "/dispatches", params = {"date"})
     public List<PurchaseOrderDTO> fetchDispatches(@RequestParam(value="date") @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate date) throws Exception {
-        System.out.println(date);
         List<PurchaseOrder> pos = salesService.findDispatches(date);
 
         return poAssembler.toResources(pos);
@@ -122,10 +121,6 @@ public class SalesRestController {
     public void returnPlant(@PathVariable String id) throws POValidationException, PurchaseOrderNotFoundException {
         salesService.returnPlant(id);
     }
-
-
-
-
 
     @ExceptionHandler(POValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
