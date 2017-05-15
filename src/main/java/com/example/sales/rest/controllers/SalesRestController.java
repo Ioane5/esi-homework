@@ -51,11 +51,13 @@ public class SalesRestController {
     }
 
     @PostMapping("/orders")
-    public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(@RequestBody PurchaseOrderDTO partialPODTO) throws POValidationException {
+    public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(
+            @RequestHeader("Authorization") String token,
+            @RequestBody PurchaseOrderDTO partialPODTO)
+            throws POValidationException {
         PlantInventoryEntry plant = plantInventoryEntryAssembler.fromResource(partialPODTO.getPlant());
         BusinessPeriod period = businessPeriodAssembler.fromResource(partialPODTO.getRentalPeriod());
-        // TODO: customer should not be null here
-        Customer customer = null; // Customer.of(IdentifierFactory.nextId(), "token", "user@example.com");
+        Customer customer = customerService.retrieveCustomer(token);
 
         PurchaseOrder purchaseOrder = salesService.createPO(customer, plant, period);
         PurchaseOrderDTO newlyCreatePODTO = poAssembler.toResource(purchaseOrder);

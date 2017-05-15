@@ -14,7 +14,8 @@ public class CustomerService {
     public Customer createCustomer(String email) {
         String id = IdentifierFactory.nextId();
         String token = IdentifierFactory.nextId();
-        return Customer.of(id, token, email);
+        return customerRepo.save(Customer.of(id, token, email));
+
     }
 
     public Customer retrieveCustomer(String token) {
