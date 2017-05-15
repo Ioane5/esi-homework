@@ -49,16 +49,12 @@ public class SalesRestControllerTests {
     @Autowired
     @Qualifier("_halObjectMapper")
     private ObjectMapper mapper;
-
     @Autowired
     private PlantInventoryEntryAssembler plantInventoryEntryAssembler;
-
     @Autowired
     private WebApplicationContext wac;
-
     @Autowired
     private PurchaseOrderRepository purchaseOrderRepository;
-
     @Autowired
     private PlantInventoryEntryRepository plantInventoryEntryRepository;
 
@@ -78,6 +74,7 @@ public class SalesRestControllerTests {
         order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now().plusDays(2)));
 
         mockMvc.perform(post("/api/sales/orders")
+                .header("Authorization", "token")
                 .content(mapper.writeValueAsString(order))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
@@ -93,6 +90,7 @@ public class SalesRestControllerTests {
         order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now().plusDays(2)));
 
         mockMvc.perform(post("/api/sales/orders")
+                .header("Authorization", "token")
                 .content(mapper.writeValueAsString(order))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
@@ -101,7 +99,8 @@ public class SalesRestControllerTests {
     @Test
     public void testGetAllPurchaseOrders() throws Exception {
         setUpOrders();
-        MvcResult result = mockMvc.perform(get("/api/sales/orders"))
+        MvcResult result = mockMvc.perform(get("/api/sales/orders")
+                .header("Authorization", "token"))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Location", isEmptyOrNullString()))
                 .andReturn();
@@ -118,7 +117,8 @@ public class SalesRestControllerTests {
     @Test
     public void testGetPurchaseOrder() throws Exception {
         setUpOrders();
-        MvcResult result = mockMvc.perform(get("/api/sales/orders/1"))
+        MvcResult result = mockMvc.perform(get("/api/sales/orders/1")
+                .header("Authorization", "token"))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Location", isEmptyOrNullString()))
                 .andReturn();
@@ -133,14 +133,25 @@ public class SalesRestControllerTests {
 
     @Test
     public void testGetNonExistentPurchaseOrder() throws Exception {
-        mockMvc.perform(get("/api/sales/orders/2"))
+        mockMvc.perform(get("/api/sales/orders/2")
+                .header("Authorization", "token"))
                 .andExpect(status().isNotFound())
                 .andReturn();
     }
 
     private void setUpOrders() {
-        PurchaseOrder po = PurchaseOrder.of("1", null, plantInventoryEntryRepository.findOne("1"), LocalDate.now(), BusinessPeriod.of(LocalDate.now(), LocalDate.now()));
-        purchaseOrderRepository.save(po);
+        purchaseOrderRepository.save(
+                PurchaseOrder.of(
+                        "1",
+                        null,
+                        plantInventoryEntryRepository.findOne("1"),
+                        LocalDate.now(),
+                        BusinessPeriod.of(
+                                LocalDate.now(),
+                                LocalDate.now()
+                        )
+                )
+        );
     }
 }
 

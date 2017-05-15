@@ -4,10 +4,11 @@ import com.example.common.application.exceptions.POValidationException;
 import com.example.common.application.exceptions.PurchaseOrderNotFoundException;
 import com.example.common.application.services.BusinessPeriodAssembler;
 import com.example.common.domain.model.BusinessPeriod;
-import com.example.common.infrastructure.IdentifierFactory;
 import com.example.inventory.application.services.PlantInventoryEntryAssembler;
 import com.example.inventory.domain.model.PlantInventoryEntry;
+import com.example.sales.application.dto.CustomerDTO;
 import com.example.sales.application.dto.PurchaseOrderDTO;
+import com.example.sales.application.services.CustomerService;
 import com.example.sales.application.services.PurchaseOrderAssembler;
 import com.example.sales.application.services.SalesService;
 import com.example.sales.domain.model.Customer;
@@ -23,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -31,9 +31,8 @@ import java.util.List;
 public class SalesRestController {
     @Autowired
     private SalesService salesService;
-
     @Autowired
-    private PurchaseOrderAssembler purchaseOrderAssembler;
+    private CustomerService customerService;
     @Autowired
     private PurchaseOrderAssembler poAssembler;
     @Autowired
@@ -41,35 +40,41 @@ public class SalesRestController {
     @Autowired
     private BusinessPeriodAssembler businessPeriodAssembler;
 
+
     @GetMapping("/orders/{id}")
-    public PurchaseOrderDTO fetchPurchaseOrder(@PathVariable("id") String id) throws PurchaseOrderNotFoundException {
-        return purchaseOrderAssembler.toResource(salesService.findPO(id));
+    public PurchaseOrderDTO fetchPurchaseOrder(@RequestHeader("Authorization") String token,
+                                               @PathVariable("id") String id) throws PurchaseOrderNotFoundException {
+        Customer customer = customerService.retrieveCustomer(token);
+        return poAssembler.toResource(salesService.findPO(id, customer));
     }
 
     @GetMapping("/orders")
-    public List<PurchaseOrderDTO> fetchPurchaseOrders() {
-        return purchaseOrderAssembler.toResources(salesService.findAllPOs());
+    public List<PurchaseOrderDTO> fetchPurchaseOrders(@RequestHeader("Authorization") String token) {
+        Customer customer = customerService.retrieveCustomer(token);
+        return poAssembler.toResources(salesService.findAllPOs(customer));
     }
 
     @PostMapping("/orders")
-    public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(@RequestBody PurchaseOrderDTO partialPODTO) throws POValidationException {
+    public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(
+            @RequestHeader("Authorization") String token,
+            @RequestBody PurchaseOrderDTO partialPODTO)
+            throws POValidationException {
         PlantInventoryEntry plant = plantInventoryEntryAssembler.fromResource(partialPODTO.getPlant());
         BusinessPeriod period = businessPeriodAssembler.fromResource(partialPODTO.getRentalPeriod());
-        // TODO: customer should not be null here
-        Customer customer = null; // Customer.of(IdentifierFactory.nextId(), "token", "user@example.com");
+        Customer customer = customerService.retrieveCustomer(token);
 
         PurchaseOrder purchaseOrder = salesService.createPO(customer, plant, period);
-        PurchaseOrderDTO newlyCreatePODTO = poAssembler.toResource(purchaseOrder);
+        PurchaseOrderDTO newPoDTO = poAssembler.toResource(purchaseOrder);
 
         HttpHeaders headers = new HttpHeaders();
 
         try {
-            headers.setLocation(new URI(newlyCreatePODTO.getId().getHref()));
+            headers.setLocation(new URI(newPoDTO.getId().getHref()));
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-        HttpStatus status = newlyCreatePODTO.getStatus() == POStatus.REJECTED ? HttpStatus.NOT_FOUND : HttpStatus.CREATED;
-        return new ResponseEntity<>(newlyCreatePODTO, headers, status);
+        HttpStatus status = newPoDTO.getStatus() == POStatus.REJECTED ? HttpStatus.NOT_FOUND : HttpStatus.CREATED;
+        return new ResponseEntity<>(newPoDTO, headers, status);
     }
 
     @PostMapping("/orders/{id}/accept")
@@ -87,12 +92,16 @@ public class SalesRestController {
         return poAssembler.toResource(salesService.rejectPurchaseOrder(id));
     }
 
-
     @GetMapping(value = "/dispatches", params = {"date"})
-    public List<PurchaseOrderDTO> fetchDispatches(@RequestParam(value="date") @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate date) throws Exception {
-        List<PurchaseOrder> pos = salesService.findDispatches(date);
+    public List<PurchaseOrderDTO> fetchDispatches(
+            @RequestParam(value = "date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) throws Exception {
+        return poAssembler.toResources(salesService.findDispatches(date));
+    }
 
-        return poAssembler.toResources(pos);
+    @PostMapping("/customers")
+    public CustomerDTO createCustomer(@RequestBody CustomerDTO partialCustomerDto) throws Exception {
+        Customer customer = customerService.createCustomer(partialCustomerDto.getEmail());
+        return CustomerDTO.of(customer.getId(), customer.getToken(), customer.getEmail());
     }
 
     @PostMapping(value = "/orders/:id/dispatch")
