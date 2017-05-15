@@ -37,14 +37,17 @@ public class PurchaseOrder {
     @Embedded
     BusinessPeriod rentalPeriod;
 
-    public static PurchaseOrder of(String id, PlantInventoryEntry plant, LocalDate issueDate, BusinessPeriod rentalPeriod) {
+    @ManyToOne
+    Customer customer;
+
+    public static PurchaseOrder of(String id, Customer customer, PlantInventoryEntry plant, LocalDate issueDate, BusinessPeriod rentalPeriod) {
         PurchaseOrder po = new PurchaseOrder();
         po.id = id;
         po.plant = plant;
         po.issueDate = issueDate;
         po.rentalPeriod = rentalPeriod;
         po.status = POStatus.PENDING;
-
+        po.customer = customer;
         return po;
     }
 
