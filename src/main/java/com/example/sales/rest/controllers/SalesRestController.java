@@ -7,13 +7,13 @@ import com.example.common.domain.model.BusinessPeriod;
 import com.example.inventory.application.services.PlantInventoryEntryAssembler;
 import com.example.inventory.domain.model.PlantInventoryEntry;
 import com.example.sales.application.dto.CustomerDTO;
+import com.example.sales.application.dto.PORequestDTO;
 import com.example.sales.application.dto.PurchaseOrderDTO;
 import com.example.sales.application.services.CustomerService;
 import com.example.sales.application.services.PurchaseOrderAssembler;
 import com.example.sales.application.services.SalesService;
 import com.example.sales.domain.model.Customer;
 import com.example.sales.domain.model.POStatus;
-import com.example.sales.domain.model.PurchaseOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -61,26 +61,14 @@ public class SalesRestController {
 
     //TODO: handle plant not found exception
     @PostMapping("/orders")
-    public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(
+    public PurchaseOrderDTO createPurchaseOrder(
             @RequestHeader("Authorization") String token,
-            @RequestBody PurchaseOrderDTO partialPODTO)
+            @RequestBody PORequestDTO poRequestDTO)
             throws POValidationException {
-        PlantInventoryEntry plant = plantInventoryEntryAssembler.fromResource(partialPODTO.getPlant());
-        BusinessPeriod period = businessPeriodAssembler.fromResource(partialPODTO.getRentalPeriod());
+
         Customer customer = customerService.retrieveCustomer(token);
-
-        PurchaseOrder purchaseOrder = salesService.createPO(customer, plant, period);
-        PurchaseOrderDTO newPoDTO = poAssembler.toResource(purchaseOrder);
-
-        HttpHeaders headers = new HttpHeaders();
-
-        try {
-            headers.setLocation(new URI(newPoDTO.getId().getHref()));
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        HttpStatus status = newPoDTO.getStatus() == POStatus.REJECTED ? HttpStatus.NOT_FOUND : HttpStatus.CREATED;
-        return new ResponseEntity<>(newPoDTO, headers, status);
+        BusinessPeriod period = businessPeriodAssembler.fromResource(poRequestDTO.getRentalPeriod());
+        return poAssembler.toResource(salesService.createPO(customer, poRequestDTO.getPlantId(), period));
     }
 
     //TODO: why it returns status as INVOICED?

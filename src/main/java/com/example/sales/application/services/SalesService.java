@@ -33,7 +33,8 @@ public class SalesService {
     @Autowired
     private InvoiceService invoiceService;
 
-    public PurchaseOrder createPO(Customer customer, PlantInventoryEntry plant, BusinessPeriod period) throws POValidationException {
+    public PurchaseOrder createPO(Customer customer, String plantId, BusinessPeriod period) throws POValidationException {
+        PlantInventoryEntry plant = inventoryService.findPlant(plantId);
         PurchaseOrder po = PurchaseOrder.of(IdentifierFactory.nextId(), customer, plant, LocalDate.now(), period);
         validateAndSavePO(po);
 
@@ -57,7 +58,7 @@ public class SalesService {
         return po;
     }
 
-    public PurchaseOrder findPO(String id) throws PurchaseOrderNotFoundException {
+    private PurchaseOrder findPO(String id) throws PurchaseOrderNotFoundException {
         PurchaseOrder po = orderRepo.findOne(id);
         if (po == null) {
             throw new PurchaseOrderNotFoundException();
