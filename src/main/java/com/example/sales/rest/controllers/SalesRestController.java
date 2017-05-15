@@ -1,39 +1,36 @@
 package com.example.sales.rest.controllers;
 
-import com.example.common.application.exceptions.PlantNotFoundException;
-import com.example.common.application.exceptions.PurchaseOrderNotFoundException;
-
 import com.example.common.application.exceptions.POValidationException;
+import com.example.common.application.exceptions.PurchaseOrderNotFoundException;
 import com.example.common.application.services.BusinessPeriodAssembler;
 import com.example.common.domain.model.BusinessPeriod;
-import com.example.common.infrastructure.IdentifierFactory;
 import com.example.inventory.application.services.PlantInventoryEntryAssembler;
 import com.example.inventory.domain.model.PlantInventoryEntry;
+import com.example.sales.application.dto.CustomerDTO;
 import com.example.sales.application.dto.PurchaseOrderDTO;
+import com.example.sales.application.services.CustomerService;
 import com.example.sales.application.services.PurchaseOrderAssembler;
 import com.example.sales.application.services.SalesService;
 import com.example.sales.domain.model.Customer;
 import com.example.sales.domain.model.POStatus;
 import com.example.sales.domain.model.PurchaseOrder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/sales")
 public class SalesRestController {
     @Autowired
     private SalesService salesService;
-
     @Autowired
-    private PurchaseOrderAssembler purchaseOrderAssembler;
+    private CustomerService customerService;
     @Autowired
     private PurchaseOrderAssembler poAssembler;
     @Autowired
@@ -41,14 +38,16 @@ public class SalesRestController {
     @Autowired
     private BusinessPeriodAssembler businessPeriodAssembler;
 
+
     @GetMapping("/orders/{id}")
+
     public PurchaseOrderDTO fetchPurchaseOrder(@PathVariable("id") String id) throws PurchaseOrderNotFoundException {
-        return purchaseOrderAssembler.toResource(salesService.findPO(id));
+        return poAssembler.toResource(salesService.findPO(id));
     }
 
     @GetMapping("/orders")
     public List<PurchaseOrderDTO> fetchPurchaseOrders() {
-        return purchaseOrderAssembler.toResources(salesService.findAllPOs());
+        return poAssembler.toResources(salesService.findAllPOs());
     }
 
     @PostMapping("/orders")
@@ -85,6 +84,12 @@ public class SalesRestController {
     @DeleteMapping("/orders/{id}")
     public PurchaseOrderDTO closePurchaseOrder(@PathVariable String id) throws Exception {
         return poAssembler.toResource(salesService.closePurchaseOrder(id));
+    }
+
+    @PostMapping("/customers")
+    public CustomerDTO createCustomer(@RequestBody CustomerDTO partialCustomerDto) throws Exception {
+        Customer customer = customerService.createCustomer(partialCustomerDto.getEmail());
+        return CustomerDTO.of(customer.getId(), customer.getToken(), customer.getEmail());
     }
 
 //    @ExceptionHandler(PlantNotFoundException.class)
