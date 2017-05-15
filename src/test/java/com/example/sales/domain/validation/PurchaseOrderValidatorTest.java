@@ -27,7 +27,7 @@ public class PurchaseOrderValidatorTest {
     @Autowired
     private PurchaseOrderValidator validatorUnderTest;
 
-    private PurchaseOrder order, openOrder, closedOrder;
+    private PurchaseOrder order;
     private String validId = "id";
     private LocalDate validIssueDate;
     private PlantInventoryEntry validPlant;
@@ -39,7 +39,7 @@ public class PurchaseOrderValidatorTest {
         validIssueDate = LocalDate.now();
         validPlant = PlantInventoryEntry.of("plantID", "name", "description", BigDecimal.TEN);
         validRentalPeriod = BusinessPeriod.of(validIssueDate.plusMonths(1), validIssueDate.plusMonths(2));
-        order = PurchaseOrder.of(validId, validPlant, validIssueDate, validRentalPeriod);
+        order = PurchaseOrder.of(validId, null, validPlant, validIssueDate, validRentalPeriod);
         validReservation = PlantReservation.of("resId", order.getRentalPeriod(), null);
         invalidReservation = PlantReservation.of("resId",
                 BusinessPeriod.of(LocalDate.now().minusYears(2), LocalDate.now().minusYears(1)), null);
@@ -52,33 +52,33 @@ public class PurchaseOrderValidatorTest {
 
     @Test
     public void testValidateOnNullId() throws Exception {
-        PurchaseOrder order = PurchaseOrder.of(null, validPlant, validIssueDate, validRentalPeriod);
+        PurchaseOrder order = PurchaseOrder.of(null, null, validPlant, validIssueDate, validRentalPeriod);
         assertEquals(1, getValidationErrors(order).getErrorCount());
     }
 
     @Test
     public void testValidateOnNullPlantInventoryEntry() throws Exception {
-        PurchaseOrder order = PurchaseOrder.of(validId, null, validIssueDate, validRentalPeriod);
+        PurchaseOrder order = PurchaseOrder.of(validId, null, null, validIssueDate, validRentalPeriod);
         assertEquals(1, getValidationErrors(order).getErrorCount());
     }
 
     @Test
     public void testValidateOnNullIssueDate() throws Exception {
-        PurchaseOrder order = PurchaseOrder.of(validId, validPlant, null, validRentalPeriod);
+        PurchaseOrder order = PurchaseOrder.of(validId, null, validPlant, null, validRentalPeriod);
         assertEquals(1, getValidationErrors(order).getErrorCount());
     }
 
     @Test
     public void testValidateOnNullRentalPeriodStart() throws Exception {
         BusinessPeriod rentalPeriod = BusinessPeriod.of(null, LocalDate.now());
-        PurchaseOrder order = PurchaseOrder.of(validId, validPlant, validIssueDate, rentalPeriod);
+        PurchaseOrder order = PurchaseOrder.of(validId, null, validPlant, validIssueDate, rentalPeriod);
         assertEquals(1, getValidationErrors(order).getErrorCount());
     }
 
     @Test
     public void testValidateOnNullRentalPeriodEnd() throws Exception {
         BusinessPeriod rentalPeriod = BusinessPeriod.of(LocalDate.now(), null);
-        PurchaseOrder order = PurchaseOrder.of(validId, validPlant, validIssueDate, rentalPeriod);
+        PurchaseOrder order = PurchaseOrder.of(validId, null, validPlant, validIssueDate, rentalPeriod);
         assertEquals(1, getValidationErrors(order).getErrorCount());
     }
 
@@ -86,7 +86,7 @@ public class PurchaseOrderValidatorTest {
     public void testValidateOnPastRentalPeriodStart() throws Exception {
         BusinessPeriod rentalPeriod =
                 BusinessPeriod.of(LocalDate.now().minusMonths(2), LocalDate.now().plusMonths(1));
-        PurchaseOrder order = PurchaseOrder.of(validId, validPlant, validIssueDate, rentalPeriod);
+        PurchaseOrder order = PurchaseOrder.of(validId, null, validPlant, validIssueDate, rentalPeriod);
         assertEquals(1, getValidationErrors(order).getErrorCount());
     }
 
@@ -94,7 +94,7 @@ public class PurchaseOrderValidatorTest {
     public void testValidateOnPastRentalPeriodEnd() throws Exception {
         BusinessPeriod rentalPeriod =
                 BusinessPeriod.of(LocalDate.now().minusMonths(2), LocalDate.now().minusMonths(1));
-        PurchaseOrder order = PurchaseOrder.of(validId, validPlant, validIssueDate, rentalPeriod);
+        PurchaseOrder order = PurchaseOrder.of(validId, null, validPlant, validIssueDate, rentalPeriod);
         assertEquals(2, getValidationErrors(order).getErrorCount());
     }
 
@@ -106,7 +106,7 @@ public class PurchaseOrderValidatorTest {
 
     @Test
     public void testValidateOnValidClosedPO() throws Exception {
-        order.addReservationAndAcceptPO(validReservation).close();
+        order.addReservationAndAcceptPO(validReservation).cancel();
         assertFalse(getValidationErrors(order).hasErrors());
     }
 
@@ -118,7 +118,7 @@ public class PurchaseOrderValidatorTest {
 
     @Test
     public void testValidateOnInvalidClosedPO() throws Exception {
-        order.addReservationAndAcceptPO(invalidReservation).close();
+        order.addReservationAndAcceptPO(invalidReservation).cancel();
         assertEquals(1, getValidationErrors(order).getErrorCount());
     }
 
@@ -131,7 +131,7 @@ public class PurchaseOrderValidatorTest {
 
     @Test
     public void testValidateTotalCostOfClosedPO() throws Exception {
-        order.addReservationAndAcceptPO(validReservation).close();
+        order.addReservationAndAcceptPO(validReservation).cancel();
         order.updateTotalCost(BigDecimal.ZERO);
         assertEquals(1, getValidationErrors(order).getErrorCount());
     }

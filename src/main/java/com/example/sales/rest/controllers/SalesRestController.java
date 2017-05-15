@@ -4,11 +4,13 @@ import com.example.common.application.exceptions.POValidationException;
 import com.example.common.application.exceptions.PurchaseOrderNotFoundException;
 import com.example.common.application.services.BusinessPeriodAssembler;
 import com.example.common.domain.model.BusinessPeriod;
+import com.example.common.infrastructure.IdentifierFactory;
 import com.example.inventory.application.services.PlantInventoryEntryAssembler;
 import com.example.inventory.domain.model.PlantInventoryEntry;
 import com.example.sales.application.dto.PurchaseOrderDTO;
 import com.example.sales.application.services.PurchaseOrderAssembler;
 import com.example.sales.application.services.SalesService;
+import com.example.sales.domain.model.Customer;
 import com.example.sales.domain.model.POStatus;
 import com.example.sales.domain.model.PurchaseOrder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,8 +55,10 @@ public class SalesRestController {
     public ResponseEntity<PurchaseOrderDTO> createPurchaseOrder(@RequestBody PurchaseOrderDTO partialPODTO) throws POValidationException {
         PlantInventoryEntry plant = plantInventoryEntryAssembler.fromResource(partialPODTO.getPlant());
         BusinessPeriod period = businessPeriodAssembler.fromResource(partialPODTO.getRentalPeriod());
+        // TODO: customer should not be null here
+        Customer customer = null; // Customer.of(IdentifierFactory.nextId(), "token", "user@example.com");
 
-        PurchaseOrder purchaseOrder = salesService.createPO(plant, period);
+        PurchaseOrder purchaseOrder = salesService.createPO(customer, plant, period);
         PurchaseOrderDTO newlyCreatePODTO = poAssembler.toResource(purchaseOrder);
 
         HttpHeaders headers = new HttpHeaders();
@@ -73,26 +77,15 @@ public class SalesRestController {
         return poAssembler.toResource(salesService.acceptPurchaseOrder(id));
     }
 
+    @DeleteMapping("/orders/{id}")
+    public PurchaseOrderDTO cancelPurchaseOrder(@PathVariable String id) throws Exception {
+        return poAssembler.toResource(salesService.cancelPurchaseOrder(id));
+    }
+
     @DeleteMapping("/orders/{id}/accept")
     public PurchaseOrderDTO rejectPurchaseOrder(@PathVariable String id) throws Exception {
         return poAssembler.toResource(salesService.rejectPurchaseOrder(id));
     }
-
-    @DeleteMapping("/orders/{id}")
-    public PurchaseOrderDTO cancelPurchaseOrder(@PathVariable String id) throws Exception {
-        PurchaseOrder po = salesService.findPO(id);
-        List<POStatus> acceptedStatuses = Arrays.asList(POStatus.PENDING, POStatus.ACCEPTED);
-        if(acceptedStatuses.contains(po.getStatus())){
-            return poAssembler.toResource(salesService.closePurchaseOrder(id));
-        }else{
-            throw new POValidationException();
-        }
-    }
-
-//    @ExceptionHandler(PlantNotFoundException.class)
-//    @ResponseStatus(HttpStatus.NOT_FOUND)
-//    public void handlePlantNotFoundException(PlantNotFoundException ex) {
-//    }
 
 
     @GetMapping(value = "/dispatches", params = {"date"})

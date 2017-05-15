@@ -46,7 +46,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class SalesRestControllerTests {
     private MockMvc mockMvc;
 
-    @Autowired @Qualifier("_halObjectMapper")
+    @Autowired
+    @Qualifier("_halObjectMapper")
     private ObjectMapper mapper;
 
     @Autowired
@@ -138,7 +139,7 @@ public class SalesRestControllerTests {
     }
 
     private void setUpOrders() {
-        PurchaseOrder po = PurchaseOrder.of("1", plantInventoryEntryRepository.findOne("1"), LocalDate.now(), BusinessPeriod.of(LocalDate.now(), LocalDate.now()));
+        PurchaseOrder po = PurchaseOrder.of("1", null, plantInventoryEntryRepository.findOne("1"), LocalDate.now(), BusinessPeriod.of(LocalDate.now(), LocalDate.now()));
         purchaseOrderRepository.save(po);
     }
 }
