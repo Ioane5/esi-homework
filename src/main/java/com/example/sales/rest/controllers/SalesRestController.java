@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -71,26 +70,15 @@ public class SalesRestController {
         return poAssembler.toResource(salesService.acceptPurchaseOrder(id));
     }
 
+    @DeleteMapping("/orders/{id}")
+    public PurchaseOrderDTO cancelPurchaseOrder(@PathVariable String id) throws Exception {
+        return poAssembler.toResource(salesService.cancelPurchaseOrder(id));
+    }
+
     @DeleteMapping("/orders/{id}/accept")
     public PurchaseOrderDTO rejectPurchaseOrder(@PathVariable String id) throws Exception {
         return poAssembler.toResource(salesService.rejectPurchaseOrder(id));
     }
-
-    @DeleteMapping("/orders/{id}")
-    public PurchaseOrderDTO cancelPurchaseOrder(@PathVariable String id) throws Exception {
-        PurchaseOrder po = salesService.findPO(id);
-        List<POStatus> acceptedStatuses = Arrays.asList(POStatus.PENDING, POStatus.ACCEPTED);
-        if(acceptedStatuses.contains(po.getStatus())){
-            return poAssembler.toResource(salesService.closePurchaseOrder(id));
-        }else{
-            throw new Exception("Plant has been already dispatched");
-        }
-    }
-
-//    @ExceptionHandler(PlantNotFoundException.class)
-//    @ResponseStatus(HttpStatus.NOT_FOUND)
-//    public void handlePlantNotFoundException(PlantNotFoundException ex) {
-//    }
 
     @ExceptionHandler(POValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

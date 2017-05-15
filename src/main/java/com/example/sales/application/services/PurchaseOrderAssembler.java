@@ -53,7 +53,7 @@ public class PurchaseOrderAssembler extends ResourceAssemblerSupport<PurchaseOrd
                     dto.add(new ExtendedLink(
                             linkTo(methodOn(SalesRestController.class)
                                     .cancelPurchaseOrder(dto.get_id())).toString(),
-                            "close", DELETE));
+                            "cancel", DELETE));
                 default:
                     break;
             }
