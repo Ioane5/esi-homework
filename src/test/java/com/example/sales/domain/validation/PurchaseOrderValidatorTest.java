@@ -106,7 +106,7 @@ public class PurchaseOrderValidatorTest {
 
     @Test
     public void testValidateOnValidClosedPO() throws Exception {
-        order.addReservationAndAcceptPO(validReservation).close();
+        order.addReservationAndAcceptPO(validReservation).cancel();
         assertFalse(getValidationErrors(order).hasErrors());
     }
 
@@ -118,7 +118,7 @@ public class PurchaseOrderValidatorTest {
 
     @Test
     public void testValidateOnInvalidClosedPO() throws Exception {
-        order.addReservationAndAcceptPO(invalidReservation).close();
+        order.addReservationAndAcceptPO(invalidReservation).cancel();
         assertEquals(1, getValidationErrors(order).getErrorCount());
     }
 
@@ -131,7 +131,7 @@ public class PurchaseOrderValidatorTest {
 
     @Test
     public void testValidateTotalCostOfClosedPO() throws Exception {
-        order.addReservationAndAcceptPO(validReservation).close();
+        order.addReservationAndAcceptPO(validReservation).cancel();
         order.updateTotalCost(BigDecimal.ZERO);
         assertEquals(1, getValidationErrors(order).getErrorCount());
     }
