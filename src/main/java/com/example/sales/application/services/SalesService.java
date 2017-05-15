@@ -153,6 +153,11 @@ public class SalesService {
 
         if(inventoryService.canChangeReservationPeriod(purchaseOrder.getReservation(), newPeriod)) {
             purchaseOrder.updateRentalPeriod(newPeriod);
+            if (purchaseOrder.getStatus() == POStatus.ACCEPTED ||
+                    purchaseOrder.getStatus() == POStatus.PENDING ||
+                    purchaseOrder.getStatus() == POStatus.REJECTED) {
+                purchaseOrder.accept();
+            }
             validateAndSavePO(purchaseOrder);
         } else {
             throw new POValidationException();
