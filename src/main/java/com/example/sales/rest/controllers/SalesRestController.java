@@ -1,9 +1,7 @@
 package com.example.sales.rest.controllers;
 
-import com.example.common.application.exceptions.PlantNotFoundException;
-import com.example.common.application.exceptions.PurchaseOrderNotFoundException;
-
 import com.example.common.application.exceptions.POValidationException;
+import com.example.common.application.exceptions.PurchaseOrderNotFoundException;
 import com.example.common.application.services.BusinessPeriodAssembler;
 import com.example.common.domain.model.BusinessPeriod;
 import com.example.inventory.application.services.PlantInventoryEntryAssembler;
@@ -14,15 +12,15 @@ import com.example.sales.application.services.SalesService;
 import com.example.sales.domain.model.POStatus;
 import com.example.sales.domain.model.PurchaseOrder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/sales")
@@ -80,7 +78,13 @@ public class SalesRestController {
 
     @DeleteMapping("/orders/{id}")
     public PurchaseOrderDTO closePurchaseOrder(@PathVariable String id) throws Exception {
-        return poAssembler.toResource(salesService.closePurchaseOrder(id));
+        PurchaseOrder po = salesService.findPO(id);
+        List<POStatus> acceptedStatuses = Arrays.asList(POStatus.PENDING, POStatus.ACCEPTED);
+        if(acceptedStatuses.contains(po.getStatus())){
+            return poAssembler.toResource(salesService.closePurchaseOrder(id));
+        }else{
+            throw new Exception("Plant has been already dispatched");
+        }
     }
 
 //    @ExceptionHandler(PlantNotFoundException.class)
