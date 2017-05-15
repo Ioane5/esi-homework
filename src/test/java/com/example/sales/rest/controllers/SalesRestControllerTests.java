@@ -4,8 +4,8 @@ import com.example.MainApplication;
 import com.example.common.application.dto.BusinessPeriodDTO;
 import com.example.common.domain.model.BusinessPeriod;
 import com.example.inventory.application.services.PlantInventoryEntryAssembler;
-import com.example.inventory.domain.model.PlantInventoryEntry;
 import com.example.inventory.domain.repository.PlantInventoryEntryRepository;
+import com.example.sales.application.dto.PORequestDTO;
 import com.example.sales.application.dto.PurchaseOrderDTO;
 import com.example.sales.domain.model.PurchaseOrder;
 import com.example.sales.domain.repository.PurchaseOrderRepository;
@@ -67,33 +67,15 @@ public class SalesRestControllerTests {
     @Test
     @Sql("plants-dataset.sql")
     public void testCheckValidPurchaseOrder() throws Exception {
-        PlantInventoryEntry pe = plantInventoryEntryRepository.findOne("1");
-
-        PurchaseOrderDTO order = new PurchaseOrderDTO();
-        order.setPlant(plantInventoryEntryAssembler.toResource(pe));
-        order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now().plusDays(2)));
+        PORequestDTO poRequest = new PORequestDTO();
+        poRequest.setPlantId("1");
+        poRequest.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now().plusDays(2)));
 
         mockMvc.perform(post("/api/sales/orders")
                 .header("Authorization", "token")
-                .content(mapper.writeValueAsString(order))
+                .content(mapper.writeValueAsString(poRequest))
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
-    }
-
-    @Test
-    @Sql("plants-dataset.sql")
-    public void testCheckRentedPurchaseOrderCreation() throws Exception {
-        PlantInventoryEntry pe = plantInventoryEntryRepository.findOne("2");
-
-        PurchaseOrderDTO order = new PurchaseOrderDTO();
-        order.setPlant(plantInventoryEntryAssembler.toResource(pe));
-        order.setRentalPeriod(BusinessPeriodDTO.of(LocalDate.now(), LocalDate.now().plusDays(2)));
-
-        mockMvc.perform(post("/api/sales/orders")
-                .header("Authorization", "token")
-                .content(mapper.writeValueAsString(order))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk());
     }
 
     @Test
