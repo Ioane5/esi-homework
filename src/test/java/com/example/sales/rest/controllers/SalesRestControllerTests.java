@@ -99,7 +99,8 @@ public class SalesRestControllerTests {
     @Test
     public void testGetAllPurchaseOrders() throws Exception {
         setUpOrders();
-        MvcResult result = mockMvc.perform(get("/api/sales/orders"))
+        MvcResult result = mockMvc.perform(get("/api/sales/orders")
+                .header("Authorization", "token"))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Location", isEmptyOrNullString()))
                 .andReturn();
@@ -116,7 +117,8 @@ public class SalesRestControllerTests {
     @Test
     public void testGetPurchaseOrder() throws Exception {
         setUpOrders();
-        MvcResult result = mockMvc.perform(get("/api/sales/orders/1"))
+        MvcResult result = mockMvc.perform(get("/api/sales/orders/1")
+                .header("Authorization", "token"))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Location", isEmptyOrNullString()))
                 .andReturn();
@@ -131,7 +133,8 @@ public class SalesRestControllerTests {
 
     @Test
     public void testGetNonExistentPurchaseOrder() throws Exception {
-        mockMvc.perform(get("/api/sales/orders/2"))
+        mockMvc.perform(get("/api/sales/orders/2")
+                .header("Authorization", "token"))
                 .andExpect(status().isNotFound())
                 .andReturn();
     }
