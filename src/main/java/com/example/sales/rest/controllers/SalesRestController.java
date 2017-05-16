@@ -8,7 +8,6 @@ import com.example.common.application.exceptions.PurchaseOrderNotFoundException;
 import com.example.common.application.exceptions.UniqueCustomerViolationException;
 import com.example.common.application.services.BusinessPeriodAssembler;
 import com.example.common.domain.model.BusinessPeriod;
-import com.example.inventory.application.services.PlantInventoryEntryAssembler;
 import com.example.sales.application.dto.CustomerDTO;
 import com.example.sales.application.dto.PORequestDTO;
 import com.example.sales.application.dto.PurchaseOrderDTO;
@@ -36,8 +35,6 @@ public class SalesRestController {
     private CustomerService customerService;
     @Autowired
     private PurchaseOrderAssembler poAssembler;
-    @Autowired
-    private PlantInventoryEntryAssembler plantInventoryEntryAssembler;
     @Autowired
     private BusinessPeriodAssembler businessPeriodAssembler;
 
@@ -87,7 +84,7 @@ public class SalesRestController {
         return poAssembler.toResource(salesService.cancelPurchaseOrder(id));
     }
 
-    @GetMapping(value = "/dispatches", params = {"date"})
+    @GetMapping(value = "/orders/dispatches", params = {"date"})
     public List<PurchaseOrderDTO> fetchDispatches(
             @RequestParam(value = "date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) throws Exception {
         return poAssembler.toResources(salesService.findDispatches(date));
