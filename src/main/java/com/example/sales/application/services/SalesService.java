@@ -8,6 +8,7 @@ import com.example.common.infrastructure.IdentifierFactory;
 import com.example.inventory.application.services.InventoryService;
 import com.example.inventory.domain.model.PlantInventoryEntry;
 import com.example.inventory.domain.model.PlantReservation;
+import com.example.inventory.domain.repository.PlantReservationRepository;
 import com.example.sales.domain.model.Customer;
 import com.example.sales.domain.model.Invoice;
 import com.example.sales.domain.model.POStatus;
@@ -25,6 +26,8 @@ import java.util.List;
 
 @Service
 public class SalesService {
+    @Autowired
+    private PlantReservationRepository plantReservationRepo;
     @Autowired
     private InventoryService inventoryService;
     @Autowired
@@ -155,13 +158,14 @@ public class SalesService {
             throw new POValidationException("Resubmission not permitted");
         }
 
-        if(inventoryService.canChangeReservationPeriod(purchaseOrder.getReservation(), newPeriod)) {
+        if (inventoryService.canChangeReservationPeriod(purchaseOrder.getReservation(), newPeriod)) {
             purchaseOrder.updateRentalPeriod(newPeriod);
-            if (purchaseOrder.getStatus() == POStatus.ACCEPTED ||
-                    purchaseOrder.getStatus() == POStatus.PENDING ||
-                    purchaseOrder.getStatus() == POStatus.REJECTED) {
+            purchaseOrder.getReservation().setSchedule(newPeriod);
+            // If plant is Rejected OR Pending it should get accepted, if it is Delivered, it stays.
+            if (purchaseOrder.getStatus() == POStatus.PENDING || purchaseOrder.getStatus() == POStatus.REJECTED) {
                 purchaseOrder.accept();
             }
+            plantReservationRepo.save(purchaseOrder.getReservation());
             validateAndSavePO(purchaseOrder);
         } else {
             throw new POValidationException("Resubmission is not available, plant is busy");
@@ -182,7 +186,7 @@ public class SalesService {
             if (requestedPeriod.getStartDate().isAfter(LocalDate.now())) {
                 return false;
             }
-        } else if(!startDateChanged && endDateChanged){
+        } else if (!startDateChanged && endDateChanged) {
             acceptedStatuses = Collections.singletonList(POStatus.PLANT_DELIVERED);
         } else {
             return false;

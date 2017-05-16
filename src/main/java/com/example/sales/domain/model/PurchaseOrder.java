@@ -20,7 +20,7 @@ public class PurchaseOrder {
     @Id
     String id;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     PlantReservation reservation;
 
     @ManyToOne
