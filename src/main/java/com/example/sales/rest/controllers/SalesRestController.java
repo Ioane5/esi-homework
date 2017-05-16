@@ -114,9 +114,12 @@ public class SalesRestController {
     }
 
     @PutMapping(value = "/orders/{id}")
-    public PurchaseOrderDTO resubmitPO(@PathVariable String id, @RequestBody BusinessPeriodDTO newPeriodDTO) throws POValidationException, PurchaseOrderNotFoundException {
+    public ResponseEntity<PurchaseOrderDTO> resubmitPO(@PathVariable String id, @RequestBody BusinessPeriodDTO newPeriodDTO) throws POValidationException, PurchaseOrderNotFoundException {
         BusinessPeriod newPeriod = businessPeriodAssembler.fromResource(newPeriodDTO);
-        return poAssembler.toResource(salesService.resubmitPO(id, newPeriod));
+        PurchaseOrderDTO purchaseOrderDTO = poAssembler.toResource(salesService.resubmitPO(id, newPeriod));
+
+        HttpHeaders headers = new HttpHeaders();
+        return new ResponseEntity<>(purchaseOrderDTO, headers, HttpStatus.CREATED);
     }
 
     @ExceptionHandler(POValidationException.class)
