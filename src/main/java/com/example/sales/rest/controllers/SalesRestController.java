@@ -41,9 +41,12 @@ public class SalesRestController {
     private BusinessPeriodAssembler businessPeriodAssembler;
 
     @PostMapping("/customers")
-    public CustomerDTO createCustomer(@RequestBody CustomerDTO partialCustomerDto) throws UniqueCustomerViolationException {
+    public ResponseEntity<CustomerDTO> createCustomer(@RequestBody CustomerDTO partialCustomerDto) throws UniqueCustomerViolationException {
         Customer customer = customerService.createCustomer(partialCustomerDto.getEmail());
-        return CustomerDTO.of(customer.getId(), customer.getToken(), customer.getEmail());
+        CustomerDTO customerDTO = CustomerDTO.of(customer.getId(), customer.getToken(), customer.getEmail());
+
+        HttpHeaders headers = new HttpHeaders();
+        return new ResponseEntity<>(customerDTO, headers, HttpStatus.CREATED);
     }
 
     @GetMapping("/orders/{id}")
