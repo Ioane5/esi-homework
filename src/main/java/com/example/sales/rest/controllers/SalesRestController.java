@@ -1,5 +1,6 @@
 package com.example.sales.rest.controllers;
 
+import com.example.common.application.dto.BusinessPeriodDTO;
 import com.example.common.application.dto.ExceptionDTO;
 import com.example.common.application.exceptions.CustomerNotFoundException;
 import com.example.common.application.exceptions.POValidationException;
@@ -110,6 +111,12 @@ public class SalesRestController {
     @PostMapping(value = "/orders/{id}/return")
     public PurchaseOrderDTO returnPlant(@PathVariable String id) throws POValidationException, PurchaseOrderNotFoundException {
         return poAssembler.toResource(salesService.returnPlant(id));
+    }
+
+    @PutMapping(value = "/orders/{id}")
+    public PurchaseOrderDTO resubmitPO(@PathVariable String id, @RequestBody BusinessPeriodDTO newPeriodDTO) throws POValidationException, PurchaseOrderNotFoundException {
+        BusinessPeriod newPeriod = businessPeriodAssembler.fromResource(newPeriodDTO);
+        return poAssembler.toResource(salesService.resubmitPO(id, newPeriod));
     }
 
     @ExceptionHandler(POValidationException.class)
