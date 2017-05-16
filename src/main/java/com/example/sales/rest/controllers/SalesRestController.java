@@ -4,6 +4,7 @@ import com.example.common.application.dto.ExceptionDTO;
 import com.example.common.application.exceptions.CustomerNotFoundException;
 import com.example.common.application.exceptions.POValidationException;
 import com.example.common.application.exceptions.PurchaseOrderNotFoundException;
+import com.example.common.application.exceptions.UniqueCustomerViolationException;
 import com.example.common.application.services.BusinessPeriodAssembler;
 import com.example.common.domain.model.BusinessPeriod;
 import com.example.inventory.application.services.PlantInventoryEntryAssembler;
@@ -40,7 +41,7 @@ public class SalesRestController {
     private BusinessPeriodAssembler businessPeriodAssembler;
 
     @PostMapping("/customers")
-    public CustomerDTO createCustomer(@RequestBody CustomerDTO partialCustomerDto) throws Exception {
+    public CustomerDTO createCustomer(@RequestBody CustomerDTO partialCustomerDto) throws UniqueCustomerViolationException {
         Customer customer = customerService.createCustomer(partialCustomerDto.getEmail());
         return CustomerDTO.of(customer.getId(), customer.getToken(), customer.getEmail());
     }
@@ -123,6 +124,12 @@ public class SalesRestController {
     @ExceptionHandler(CustomerNotFoundException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ExceptionDTO handleCustomerNotFoundException(CustomerNotFoundException ex) {
+        return handleException(ex);
+    }
+
+    @ExceptionHandler(UniqueCustomerViolationException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ExceptionDTO handleUniqueCustomerViolationException(UniqueCustomerViolationException ex) {
         return handleException(ex);
     }
 
