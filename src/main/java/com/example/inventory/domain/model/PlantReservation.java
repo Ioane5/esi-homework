@@ -36,6 +36,10 @@ public class PlantReservation {
         return r;
     }
 
+    public void setSchedule(BusinessPeriod schedule) {
+        this.schedule = schedule;
+    }
+
     public PlantReservation withMaintenancePlan(MaintenancePlan maintenancePlan) {
         this.maintenancePlan = maintenancePlan;
         return this;

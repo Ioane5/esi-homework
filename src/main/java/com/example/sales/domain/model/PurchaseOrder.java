@@ -63,6 +63,11 @@ public class PurchaseOrder {
         total = price.multiply(BigDecimal.valueOf(numberOfWorkingDays));
     }
 
+    public void updateRentalPeriod(BusinessPeriod rentalPeriod) {
+        this.rentalPeriod = rentalPeriod;
+        this.reservation.setSchedule(rentalPeriod);
+    }
+
     public PurchaseOrder accept() {
         this.status = POStatus.ACCEPTED;
         return this;

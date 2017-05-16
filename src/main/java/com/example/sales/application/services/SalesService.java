@@ -8,6 +8,7 @@ import com.example.common.infrastructure.IdentifierFactory;
 import com.example.inventory.application.services.InventoryService;
 import com.example.inventory.domain.model.PlantInventoryEntry;
 import com.example.inventory.domain.model.PlantReservation;
+import com.example.inventory.domain.repository.PlantReservationRepository;
 import com.example.sales.domain.model.Customer;
 import com.example.sales.domain.model.Invoice;
 import com.example.sales.domain.model.POStatus;
@@ -20,10 +21,13 @@ import org.springframework.validation.DataBinder;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Service
 public class SalesService {
+    @Autowired
+    private PlantReservationRepository plantReservationRepo;
     @Autowired
     private InventoryService inventoryService;
     @Autowired
@@ -145,5 +149,48 @@ public class SalesService {
         } else {
             throw new POValidationException("Purchase order is not delivered yet");
         }
+    }
+
+    public PurchaseOrder resubmitPO(String id, BusinessPeriod newPeriod) throws PurchaseOrderNotFoundException, POValidationException {
+        PurchaseOrder purchaseOrder = findPO(id);
+
+        if (!isPOResubmissionEnabled(purchaseOrder, newPeriod)) {
+            throw new POValidationException("Resubmission not permitted");
+        }
+
+        if (inventoryService.canChangeReservationPeriod(purchaseOrder.getReservation(), newPeriod)) {
+            purchaseOrder.updateRentalPeriod(newPeriod);
+            purchaseOrder.getReservation().setSchedule(newPeriod);
+            // If plant is Rejected OR Pending it should get accepted, if it is Delivered, it stays.
+            if (purchaseOrder.getStatus() == POStatus.PENDING || purchaseOrder.getStatus() == POStatus.REJECTED) {
+                purchaseOrder.accept();
+            }
+            plantReservationRepo.save(purchaseOrder.getReservation());
+            validateAndSavePO(purchaseOrder);
+        } else {
+            throw new POValidationException("Resubmission is not available, plant is busy");
+        }
+        return purchaseOrder;
+    }
+
+    private boolean isPOResubmissionEnabled(PurchaseOrder purchaseOrder, BusinessPeriod requestedPeriod) {
+        BusinessPeriod currentPeriod = purchaseOrder.getRentalPeriod();
+
+        boolean startDateChanged = !currentPeriod.getStartDate().isEqual(requestedPeriod.getStartDate());
+        boolean endDateChanged = !currentPeriod.getEndDate().isEqual(requestedPeriod.getEndDate());
+
+        List<POStatus> acceptedStatuses;
+        if (startDateChanged && endDateChanged) {
+            acceptedStatuses = Arrays.asList(POStatus.PENDING, POStatus.ACCEPTED, POStatus.REJECTED);
+            // If start date is changed, it should be after present time :)
+            if (requestedPeriod.getStartDate().isAfter(LocalDate.now())) {
+                return false;
+            }
+        } else if (!startDateChanged && endDateChanged) {
+            acceptedStatuses = Collections.singletonList(POStatus.PLANT_DELIVERED);
+        } else {
+            return false;
+        }
+        return acceptedStatuses.contains(purchaseOrder.getStatus());
     }
 }
