@@ -56,7 +56,7 @@ public class InvoiceService {
         helper.setTo(email);
         helper.setSubject("Invoice Purchase Order " + invoice.getOrder().getId());
         helper.setText("Dear customer,\n\nPlease find attached the Invoice corresponding to your Purchase Order " +
-                invoice.getOrder().getId() + ".\n\nKindly yours,\n\nESI 13 RentIt Team!");
+                invoice.getOrder().getId() + ".\n\nKindly yours,\n\nESI 11 RentIt Team!");
 
         helper.addAttachment("invoice.json", new ByteArrayDataSource(json, "application/json"));
 
@@ -73,7 +73,7 @@ public class InvoiceService {
         List<Invoice> unpaidInvoices = invoiceRepository.findUnpaidInvoices();
         unpaidInvoices.forEach(invoice -> {
             try {
-                sendInvoice(invoice, "builtit2017@gmail.com");
+                sendInvoice(invoice, invoice.getOrder().getCustomer().getEmail());
             } catch (IOException | MessagingException ex1) {
                 throw new RuntimeException(ex1);
             }

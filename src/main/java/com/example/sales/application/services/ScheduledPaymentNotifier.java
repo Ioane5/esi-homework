@@ -10,7 +10,7 @@ public class ScheduledPaymentNotifier {
     @Autowired
     private InvoiceService invoiceService;
 
-    @Scheduled(cron = "0 0 18 * * FRI")
+    @Scheduled(cron = "0 0 12 * * *")
     public void sendPaymentReminders() {
         System.out.println("Sending payment reminders");
         invoiceService.sendPaymentReminders();

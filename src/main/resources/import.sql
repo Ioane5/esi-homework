@@ -42,3 +42,4 @@
 -- insert into plant_reservation (id, plant_id, maintenance_plan_id, start_date, end_date) values (10, 13, 1, '2017-04-01', '2017-04-02');
 --
 -- insert into invoice (id) values (1);
+-- insert into customer (id, token, email) values (1, 'token', 'builtit2017@gmail.com');

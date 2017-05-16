@@ -29,13 +29,15 @@ public class InventoryService {
         PlantInventoryItem freePlant = items.get(0);
 
         PlantReservation pr = PlantReservation.of(IdentifierFactory.nextId(), period, freePlant).withPurchaseOrder(po);
-        plantReservationRepository.save(pr);
-
-        return pr;
+        return plantReservationRepository.save(pr);
     }
 
     public List<PlantInventoryEntry> findAvailablePlants(String name, BusinessPeriod businessPeriod) {
         return inventoryRepo.findAvailablePlants(name, businessPeriod);
+    }
+
+    public PlantInventoryEntry findPlant(String plantId) {
+        return inventoryRepo.findOne(plantId);
     }
 
     public boolean canChangeReservationPeriod(PlantReservation reservation, BusinessPeriod newPeriod) {
