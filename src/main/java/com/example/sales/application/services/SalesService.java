@@ -9,6 +9,8 @@ import com.example.inventory.application.services.InventoryService;
 import com.example.inventory.domain.model.PlantInventoryEntry;
 import com.example.inventory.domain.model.PlantReservation;
 import com.example.sales.domain.model.Customer;
+import com.example.sales.domain.model.Invoice;
+import com.example.sales.domain.model.POStatus;
 import com.example.sales.domain.model.PurchaseOrder;
 import com.example.sales.domain.repository.PurchaseOrderRepository;
 import com.example.sales.domain.validation.PurchaseOrderValidator;
@@ -150,7 +152,7 @@ public class SalesService {
         PurchaseOrder purchaseOrder = findPO(id);
 
         if (!isPOResubmissionEnabled(purchaseOrder, newPeriod)) {
-            throw new POValidationException();
+            throw new POValidationException("Resubmission not permitted");
         }
 
         if(inventoryService.canChangeReservationPeriod(purchaseOrder.getReservation(), newPeriod)) {
@@ -162,7 +164,7 @@ public class SalesService {
             }
             validateAndSavePO(purchaseOrder);
         } else {
-            throw new POValidationException();
+            throw new POValidationException("Resubmission is not available, plant is busy");
         }
         return purchaseOrder;
     }
