@@ -42,9 +42,12 @@ public class SalesRestController {
     private BusinessPeriodAssembler businessPeriodAssembler;
 
     @PostMapping("/customers")
-    public CustomerDTO createCustomer(@RequestBody CustomerDTO partialCustomerDto) throws UniqueCustomerViolationException {
+    public ResponseEntity<CustomerDTO> createCustomer(@RequestBody CustomerDTO partialCustomerDto) throws UniqueCustomerViolationException {
         Customer customer = customerService.createCustomer(partialCustomerDto.getEmail());
-        return CustomerDTO.of(customer.getId(), customer.getToken(), customer.getEmail());
+        CustomerDTO customerDTO = CustomerDTO.of(customer.getId(), customer.getToken(), customer.getEmail());
+
+        HttpHeaders headers = new HttpHeaders();
+        return new ResponseEntity<>(customerDTO, headers, HttpStatus.CREATED);
     }
 
     @GetMapping("/orders/{id}")
@@ -111,9 +114,12 @@ public class SalesRestController {
     }
 
     @PutMapping(value = "/orders/{id}")
-    public PurchaseOrderDTO resubmitPO(@PathVariable String id, @RequestBody BusinessPeriodDTO newPeriodDTO) throws POValidationException, PurchaseOrderNotFoundException {
+    public ResponseEntity<PurchaseOrderDTO> resubmitPO(@PathVariable String id, @RequestBody BusinessPeriodDTO newPeriodDTO) throws POValidationException, PurchaseOrderNotFoundException {
         BusinessPeriod newPeriod = businessPeriodAssembler.fromResource(newPeriodDTO);
-        return poAssembler.toResource(salesService.resubmitPO(id, newPeriod));
+        PurchaseOrderDTO purchaseOrderDTO = poAssembler.toResource(salesService.resubmitPO(id, newPeriod));
+
+        HttpHeaders headers = new HttpHeaders();
+        return new ResponseEntity<>(purchaseOrderDTO, headers, HttpStatus.CREATED);
     }
 
     @ExceptionHandler(POValidationException.class)
