@@ -41,6 +41,10 @@ public class PlantReservation {
         this.schedule = schedule;
     }
 
+    public void setPlant(PlantInventoryItem plant) {
+        this.plant = plant;
+    }
+
     public PlantReservation withMaintenancePlanId(String maintenancePlanId) {
         this.maintenancePlanId = maintenancePlanId;
         return this;
