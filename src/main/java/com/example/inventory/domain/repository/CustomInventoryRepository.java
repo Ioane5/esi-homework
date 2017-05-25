@@ -3,6 +3,7 @@ package com.example.inventory.domain.repository;
 import com.example.common.domain.model.BusinessPeriod;
 import com.example.inventory.domain.model.PlantInventoryEntry;
 import com.example.inventory.domain.model.PlantInventoryItem;
+import com.example.inventory.domain.model.PlantReservation;
 
 import java.util.List;
 
@@ -16,4 +17,5 @@ public interface CustomInventoryRepository {
     List<PlantInventoryItem> findAvailablePlantItemsInBusinessPeriod(String entryId, BusinessPeriod period);
     List<PlantInventoryItem> findPlantItemsNotHiredInLastSixMonths();
     List<PlantInventoryEntry> findAvailablePlants(String name, BusinessPeriod period);
+    boolean canChangeReservationPeriod(PlantReservation reservation, BusinessPeriod newPeriod);
 }

@@ -1,12 +1,13 @@
 package com.example.sales.rest.controllers;
 
+import com.example.common.application.dto.BusinessPeriodDTO;
 import com.example.common.application.dto.ExceptionDTO;
 import com.example.common.application.exceptions.CustomerNotFoundException;
 import com.example.common.application.exceptions.POValidationException;
 import com.example.common.application.exceptions.PurchaseOrderNotFoundException;
+import com.example.common.application.exceptions.UniqueCustomerViolationException;
 import com.example.common.application.services.BusinessPeriodAssembler;
 import com.example.common.domain.model.BusinessPeriod;
-import com.example.inventory.application.services.PlantInventoryEntryAssembler;
 import com.example.sales.application.dto.CustomerDTO;
 import com.example.sales.application.dto.PORequestDTO;
 import com.example.sales.application.dto.PurchaseOrderDTO;
@@ -36,14 +37,15 @@ public class SalesRestController {
     @Autowired
     private PurchaseOrderAssembler poAssembler;
     @Autowired
-    private PlantInventoryEntryAssembler plantInventoryEntryAssembler;
-    @Autowired
     private BusinessPeriodAssembler businessPeriodAssembler;
 
     @PostMapping("/customers")
-    public CustomerDTO createCustomer(@RequestBody CustomerDTO partialCustomerDto) throws Exception {
+    public ResponseEntity<CustomerDTO> createCustomer(@RequestBody CustomerDTO partialCustomerDto) throws UniqueCustomerViolationException {
         Customer customer = customerService.createCustomer(partialCustomerDto.getEmail());
-        return CustomerDTO.of(customer.getId(), customer.getToken(), customer.getEmail());
+        CustomerDTO customerDTO = CustomerDTO.of(customer.getId(), customer.getToken(), customer.getEmail());
+
+        HttpHeaders headers = new HttpHeaders();
+        return new ResponseEntity<>(customerDTO, headers, HttpStatus.CREATED);
     }
 
     @GetMapping("/orders/{id}")
@@ -83,7 +85,7 @@ public class SalesRestController {
         return poAssembler.toResource(salesService.cancelPurchaseOrder(id));
     }
 
-    @GetMapping(value = "/dispatches", params = {"date"})
+    @GetMapping(value = "/orders/dispatches", params = {"date"})
     public List<PurchaseOrderDTO> fetchDispatches(
             @RequestParam(value = "date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) throws Exception {
         return poAssembler.toResources(salesService.findDispatches(date));
@@ -115,6 +117,15 @@ public class SalesRestController {
         return poAssembler.toResource(salesService.returnPlant(id));
     }
 
+    @PutMapping(value = "/orders/{id}")
+    public ResponseEntity<PurchaseOrderDTO> resubmitPO(@PathVariable String id, @RequestBody BusinessPeriodDTO newPeriodDTO) throws POValidationException, PurchaseOrderNotFoundException {
+        BusinessPeriod newPeriod = businessPeriodAssembler.fromResource(newPeriodDTO);
+        PurchaseOrderDTO purchaseOrderDTO = poAssembler.toResource(salesService.resubmitPO(id, newPeriod));
+
+        HttpHeaders headers = new HttpHeaders();
+        return new ResponseEntity<>(purchaseOrderDTO, headers, HttpStatus.CREATED);
+    }
+
     @ExceptionHandler(POValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ExceptionDTO handlePOValidationException(POValidationException ex) {
@@ -130,6 +141,12 @@ public class SalesRestController {
     @ExceptionHandler(CustomerNotFoundException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ExceptionDTO handleCustomerNotFoundException(CustomerNotFoundException ex) {
+        return handleException(ex);
+    }
+
+    @ExceptionHandler(UniqueCustomerViolationException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ExceptionDTO handleUniqueCustomerViolationException(UniqueCustomerViolationException ex) {
         return handleException(ex);
     }
 

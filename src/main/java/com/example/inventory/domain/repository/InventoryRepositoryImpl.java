@@ -3,6 +3,7 @@ package com.example.inventory.domain.repository;
 import com.example.common.domain.model.BusinessPeriod;
 import com.example.inventory.domain.model.PlantInventoryEntry;
 import com.example.inventory.domain.model.PlantInventoryItem;
+import com.example.inventory.domain.model.PlantReservation;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityManager;
@@ -63,5 +64,19 @@ public class InventoryRepositoryImpl implements CustomInventoryRepository {
                 .setParameter(2, period.getStartDate())
                 .setParameter(3, period.getEndDate())
                 .getResultList();
+    }
+
+    @Override
+    public boolean canChangeReservationPeriod(PlantReservation reservation, BusinessPeriod newPeriod) {
+        return em.createQuery(
+                "select r from PlantReservation r where " +
+                        "r <> ?1 and r.plant = ?2 and not (r.schedule.endDate < ?3 or r.schedule.startDate > ?4)"
+                , PlantReservation.class)
+                // THIS CODE IS CORRECT!
+                .setParameter(1, reservation)
+                .setParameter(2, reservation.getPlant())
+                .setParameter(3, newPeriod.getStartDate())
+                .setParameter(4, newPeriod.getEndDate())
+                .getResultList().size() == 0;
     }
 }
