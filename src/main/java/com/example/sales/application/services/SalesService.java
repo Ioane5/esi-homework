@@ -15,10 +15,17 @@ import com.example.sales.domain.model.POStatus;
 import com.example.sales.domain.model.PurchaseOrder;
 import com.example.sales.domain.repository.PurchaseOrderRepository;
 import com.example.sales.domain.validation.PurchaseOrderValidator;
+import com.example.sales.integration.InvoicingGateway;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.DataBinder;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,6 +43,11 @@ public class SalesService {
     private PurchaseOrderValidator poValidator;
     @Autowired
     private InvoiceService invoiceService;
+    @Autowired
+    private InvoicingGateway emailSender;
+
+    @Value("${gmail.username}")
+    private String mailUsername;
 
     public PurchaseOrder createPO(Customer customer, String plantId, BusinessPeriod period) throws POValidationException {
         PlantInventoryEntry plant = inventoryService.findPlant(plantId);
@@ -79,6 +91,21 @@ public class SalesService {
         } else {
             throw new POValidationException("Purchase order is already dispatched");
         }
+    }
+
+    public void poEmergencyCancel(PurchaseOrder po) throws MessagingException {
+        orderRepo.save(po.reject());
+        String id = po.getId();
+        JavaMailSender mailSender = new JavaMailSenderImpl();
+        MimeMessage rootMessage = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(rootMessage, true);
+        helper.setFrom(mailUsername + "@gmail.com");
+        helper.setTo(po.getCustomer().getEmail());
+        helper.setSubject("Emergency cancel of Purchase Order " + id);
+        helper.setText("Dear customer,\n\n" +
+                "We are sorry, but your purchase order was canceled due to maintenance issues" + id + ".\n\n" +
+                "Kindly yours,\n\nESI 11 RentIt Team!");
+        emailSender.sendInvoice(rootMessage);
     }
 
     public List<PurchaseOrder> findAllPOs(Customer customer) {
