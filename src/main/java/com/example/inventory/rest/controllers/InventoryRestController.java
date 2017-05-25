@@ -3,7 +3,7 @@ package com.example.inventory.rest.controllers;
 import com.example.common.application.exceptions.PlantNotFoundException;
 import com.example.common.application.services.BusinessPeriodAssembler;
 import com.example.common.domain.model.BusinessPeriod;
-import com.example.inventory.application.dto.MaintenanceReservationDTO;
+import com.example.inventory.application.dto.MaintenancePlanDTO;
 import com.example.inventory.application.dto.PlantInventoryEntryDTO;
 import com.example.inventory.application.services.InventoryService;
 import com.example.inventory.application.services.PlantInventoryEntryAssembler;
@@ -36,11 +36,11 @@ public class InventoryRestController {
     }
 
     @PostMapping("/reservations")
-    public void reservePlantForMaintenance(@RequestBody MaintenanceReservationDTO reservationDTO) throws PlantNotFoundException {
-        String itemId = reservationDTO.getItemId();
-        String maintenancePlanId = reservationDTO.getMaintenancePlanId();
+    public void reservePlantForMaintenance(@RequestBody MaintenancePlanDTO reservationDTO) throws PlantNotFoundException {
+        String plantId = reservationDTO.getPlantId();
+        String maintenancePlanId = reservationDTO.getId();
         BusinessPeriod maintenancePeriod = businessPeriodAssembler.fromResource(reservationDTO.getMaintenancePeriod());
-        inventoryService.reservePlantItem(itemId, maintenancePeriod, maintenancePlanId);
+        inventoryService.reservePlantItem(plantId, maintenancePeriod, maintenancePlanId);
         // TODO: Should discard any existing reservations on the item with given itemId
         // TODO: Should find replacement items if possible
         // TODO: Should email client if replacement was not found (reject po)

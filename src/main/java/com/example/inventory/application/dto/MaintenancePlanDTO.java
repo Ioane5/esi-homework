@@ -5,8 +5,8 @@ import com.example.common.application.dto.BusinessPeriodDTO;
 import lombok.Data;
 
 @Data
-public class MaintenanceReservationDTO {
-    String itemId;
-    String maintenancePlanId;
+public class MaintenancePlanDTO {
+    String id;
+    String plantId;
     BusinessPeriodDTO maintenancePeriod;
 }
