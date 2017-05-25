@@ -41,8 +41,5 @@ public class InventoryRestController {
         String maintenancePlanId = reservationDTO.getId();
         BusinessPeriod maintenancePeriod = businessPeriodAssembler.fromResource(reservationDTO.getMaintenancePeriod());
         inventoryService.reservePlantItem(plantId, maintenancePeriod, maintenancePlanId);
-        // TODO: Should discard any existing reservations on the item with given itemId
-        // TODO: Should find replacement items if possible
-        // TODO: Should email client if replacement was not found (reject po)
     }
 }
