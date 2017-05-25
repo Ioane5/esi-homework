@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
+@CrossOrigin()
 @RequestMapping("/api/sales")
 public class SalesRestController {
     @Autowired
@@ -86,6 +87,12 @@ public class SalesRestController {
     public List<PurchaseOrderDTO> fetchDispatches(
             @RequestParam(value = "date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) throws Exception {
         return poAssembler.toResources(salesService.findDispatches(date));
+    }
+
+    @GetMapping(value = "/arrivals", params = {"date"})
+    public List<PurchaseOrderDTO> fetchArrivals(
+            @RequestParam(value = "date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) throws Exception {
+        return poAssembler.toResources(salesService.findArrivals(date));
     }
 
     @PostMapping(value = "/orders/{id}/dispatch")

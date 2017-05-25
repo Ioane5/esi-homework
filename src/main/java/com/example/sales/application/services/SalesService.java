@@ -87,6 +87,10 @@ public class SalesService {
         return orderRepo.findDispatches(date);
     }
 
+    public List<PurchaseOrder> findArrivals(LocalDate date) {
+        return orderRepo.findArrivals(date);
+    }
+
     private void validateAndSavePO(PurchaseOrder po) throws POValidationException {
         DataBinder binder = new DataBinder(po);
         binder.addValidators(poValidator);
