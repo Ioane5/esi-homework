@@ -1,26 +1,20 @@
 package com.example.inventory.rest.controllers;
 
 import com.example.MainApplication;
-import com.example.common.application.dto.BusinessPeriodDTO;
 import com.example.common.domain.model.BusinessPeriod;
 import com.example.common.infrastructure.IdentifierFactory;
 import com.example.inventory.application.dto.PlantInventoryEntryDTO;
 import com.example.inventory.domain.model.PlantReservation;
-import com.example.inventory.domain.repository.PlantInventoryEntryRepository;
 import com.example.inventory.domain.repository.PlantInventoryItemRepository;
 import com.example.inventory.domain.repository.PlantReservationRepository;
-import com.example.maintenance.domain.repository.MaintenancePlanRepository;
-import com.example.sales.application.dto.PurchaseOrderDTO;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -34,9 +28,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = MainApplication.class)

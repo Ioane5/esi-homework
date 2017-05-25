@@ -1,13 +1,10 @@
 package com.example.inventory.application.services;
 
-import com.example.inventory.domain.model.PlantInventoryEntry;
 import com.example.inventory.application.dto.PlantInventoryEntryDTO;
+import com.example.inventory.domain.model.PlantInventoryEntry;
 import com.example.inventory.rest.controllers.InventoryRestController;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class PlantInventoryEntryAssembler extends ResourceAssemblerSupport<PlantInventoryEntry, PlantInventoryEntryDTO> {

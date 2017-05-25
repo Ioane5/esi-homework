@@ -75,9 +75,7 @@ public class SalesService {
         PurchaseOrder po = findPO(id);
         List<POStatus> acceptedStatuses = Arrays.asList(POStatus.PENDING, POStatus.ACCEPTED);
         if (acceptedStatuses.contains(po.getStatus())) {
-            po.cancel();
-            orderRepo.save(po);
-            return po;
+            return orderRepo.save(po.cancel());
         } else {
             throw new POValidationException("Purchase order is already dispatched");
         }
@@ -105,8 +103,7 @@ public class SalesService {
     public PurchaseOrder dispatchPO(String id) throws PurchaseOrderNotFoundException, POValidationException {
         PurchaseOrder po = findPO(id);
         if (po.getStatus() == POStatus.ACCEPTED) {
-            po.dispatch();
-            return orderRepo.save(po);
+            return orderRepo.save(po.dispatch());
         } else {
             throw new POValidationException("Purchase order can not be dispatched");
         }
@@ -115,8 +112,7 @@ public class SalesService {
     public PurchaseOrder acceptDelivery(String id) throws PurchaseOrderNotFoundException, POValidationException {
         PurchaseOrder po = findPO(id);
         if (po.getStatus() == POStatus.PLANT_DISPATCHED) {
-            po.acceptDelivery();
-            return orderRepo.save(po);
+            return orderRepo.save(po.acceptDelivery());
         } else {
             throw new POValidationException("Purchase order is not dispatched yet");
         }
@@ -125,8 +121,7 @@ public class SalesService {
     public PurchaseOrder rejectDelivery(String id) throws PurchaseOrderNotFoundException, POValidationException {
         PurchaseOrder po = findPO(id);
         if (po.getStatus() == POStatus.PLANT_DISPATCHED) {
-            po.rejectDelivery();
-            return orderRepo.save(po);
+            return orderRepo.save(po.rejectDelivery());
         } else {
             throw new POValidationException("Purchase order is not dispatched yet");
         }
@@ -135,9 +130,7 @@ public class SalesService {
     public PurchaseOrder returnPlant(String id) throws PurchaseOrderNotFoundException, POValidationException {
         PurchaseOrder po = findPO(id);
         if (po.getStatus() == POStatus.PLANT_DELIVERED) {
-            po.returnPlant();
-            orderRepo.save(po);
-
+            orderRepo.save(po.returnPlant());
             Invoice invoice = invoiceService.createInvoice(po);
             try {
                 invoiceService.sendInvoice(invoice, po.getCustomer().getEmail());
