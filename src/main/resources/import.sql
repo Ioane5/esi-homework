@@ -27,8 +27,6 @@
 -- insert into plant_inventory_item (id, plant_info_id, serial_number, equipment_condition) values (12, 5, 'A12', 'UNSERVICEABLE_REPAIRABLE');
 -- insert into plant_inventory_item (id, plant_info_id, serial_number, equipment_condition) values (13, 6, 'A13', 'UNSERVICEABLE_REPAIRABLE');
 --
--- insert into maintenance_plan (id, year_of_action) values (1, 2017);
---
 -- insert into plant_reservation (id, plant_id, start_date, end_date) values (1, 1, '2017-03-22', '2017-03-24');
 -- insert into plant_reservation (id, plant_id, start_date, end_date) values (2, 2, '2015-03-22', '2016-03-24');
 -- insert into plant_reservation (id, plant_id, start_date, end_date) values (3, 3, '2015-03-22', '2016-03-24');
@@ -42,4 +40,6 @@
 -- insert into plant_reservation (id, plant_id, maintenance_plan_id, start_date, end_date) values (10, 13, 1, '2017-04-01', '2017-04-02');
 --
 -- insert into invoice (id) values (1);
--- insert into customer (id, token, email) values (1, 'token', 'builtit2017@gmail.com');
+-- insert into customer (id, token, email) values (1, 'it_is_04_35am', 'builtit2017@gmail.com');
+-- insert into customer (id, token, email) values (2, 'rybachello', 'buildit228@gmail.com');
+-- insert into customer (id, token, email) values (3, 'esi_you_gonna_die', 'buildit.esi.assignment@zoho.eu');
