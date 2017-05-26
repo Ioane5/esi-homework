@@ -17,6 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/inventory")
+@CrossOrigin()
 public class InventoryRestController {
     @Autowired
     private InventoryService inventoryService;
@@ -33,6 +34,24 @@ public class InventoryRestController {
     ) {
         List<PlantInventoryEntry> plants = inventoryService.findAvailablePlants(plantName, BusinessPeriod.of(startDate, endDate));
         return plantInventoryEntryAssembler.toResources(plants);
+    }
+
+
+    @GetMapping("/plants/all")
+    public List<PlantInventoryEntryDTO> findAllPlants() {
+        List<PlantInventoryEntry> plants = inventoryService.findAll();
+        return plantInventoryEntryAssembler.toResources(plants);
+    }
+
+
+    @GetMapping("/plants/{id}")
+    public PlantInventoryEntryDTO findAvailablePlant(
+            @PathVariable("id") String id,
+            @RequestParam(name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(name = "endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+    ) {
+        PlantInventoryEntry plant = inventoryService.findAvailablePlant(id, BusinessPeriod.of(startDate, endDate));
+        return plantInventoryEntryAssembler.toResource(plant);
     }
 
     @PostMapping("/reservations")

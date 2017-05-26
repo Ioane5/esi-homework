@@ -17,5 +17,6 @@ public interface CustomInventoryRepository {
     List<PlantInventoryItem> findAvailablePlantItemsInBusinessPeriod(String entryId, BusinessPeriod period);
     List<PlantInventoryItem> findPlantItemsNotHiredInLastSixMonths();
     List<PlantInventoryEntry> findAvailablePlants(String name, BusinessPeriod period);
+    PlantInventoryEntry findAvailablePlant(String id, BusinessPeriod period);
     boolean canChangeReservationPeriod(PlantReservation reservation, BusinessPeriod newPeriod);
 }
