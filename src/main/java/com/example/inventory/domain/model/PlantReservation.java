@@ -1,9 +1,11 @@
 package com.example.inventory.domain.model;
 
 import com.example.common.domain.model.BusinessPeriod;
-import com.example.maintenance.domain.model.MaintenancePlan;
 import com.example.sales.domain.model.PurchaseOrder;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
@@ -21,8 +23,7 @@ public class PlantReservation {
     @ManyToOne
     PlantInventoryItem plant;
 
-    @ManyToOne
-    MaintenancePlan maintenancePlan;
+    String maintenancePlanId;
 
     @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     PurchaseOrder rental;
@@ -40,8 +41,12 @@ public class PlantReservation {
         this.schedule = schedule;
     }
 
-    public PlantReservation withMaintenancePlan(MaintenancePlan maintenancePlan) {
-        this.maintenancePlan = maintenancePlan;
+    public void setPlant(PlantInventoryItem plant) {
+        this.plant = plant;
+    }
+
+    public PlantReservation withMaintenancePlanId(String maintenancePlanId) {
+        this.maintenancePlanId = maintenancePlanId;
         return this;
     }
 

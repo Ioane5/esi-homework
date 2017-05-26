@@ -1,6 +1,9 @@
 package com.example.inventory.rest.controllers;
 
+import com.example.common.application.exceptions.PlantNotFoundException;
+import com.example.common.application.services.BusinessPeriodAssembler;
 import com.example.common.domain.model.BusinessPeriod;
+import com.example.inventory.application.dto.MaintenancePlanDTO;
 import com.example.inventory.application.dto.PlantInventoryEntryDTO;
 import com.example.inventory.application.services.InventoryService;
 import com.example.inventory.application.services.PlantInventoryEntryAssembler;
@@ -20,6 +23,8 @@ public class InventoryRestController {
     private InventoryService inventoryService;
     @Autowired
     private PlantInventoryEntryAssembler plantInventoryEntryAssembler;
+    @Autowired
+    private BusinessPeriodAssembler businessPeriodAssembler;
 
     @GetMapping("/plants")
     public List<PlantInventoryEntryDTO> findAvailablePlants(
@@ -30,6 +35,7 @@ public class InventoryRestController {
         List<PlantInventoryEntry> plants = inventoryService.findAvailablePlants(plantName, BusinessPeriod.of(startDate, endDate));
         return plantInventoryEntryAssembler.toResources(plants);
     }
+
 
     @GetMapping("/plants/all")
     public List<PlantInventoryEntryDTO> findAllPlants() {
@@ -46,5 +52,13 @@ public class InventoryRestController {
     ) {
         PlantInventoryEntry plant = inventoryService.findAvailablePlant(id, BusinessPeriod.of(startDate, endDate));
         return plantInventoryEntryAssembler.toResource(plant);
+    }
+
+    @PostMapping("/reservations")
+    public void reservePlantForMaintenance(@RequestBody MaintenancePlanDTO reservationDTO) throws PlantNotFoundException {
+        String plantId = reservationDTO.getPlantId();
+        String maintenancePlanId = reservationDTO.getId();
+        BusinessPeriod maintenancePeriod = businessPeriodAssembler.fromResource(reservationDTO.getMaintenancePeriod());
+        inventoryService.reservePlantItem(plantId, maintenancePeriod, maintenancePlanId);
     }
 }

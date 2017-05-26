@@ -4,7 +4,6 @@ import com.example.MainApplication;
 import com.example.common.domain.model.BusinessPeriod;
 import com.example.common.infrastructure.IdentifierFactory;
 import com.example.inventory.domain.model.PlantReservation;
-import com.example.maintenance.domain.repository.MaintenancePlanRepository;
 import com.example.sales.domain.model.PurchaseOrder;
 import com.example.sales.domain.repository.PurchaseOrderRepository;
 import org.junit.Test;
@@ -32,8 +31,6 @@ public class InventoryRepositoryTests {
     private PlantReservationRepository plantReservationRepo;
     @Autowired
     private PlantInventoryItemRepository plantInventoryItemRepo;
-    @Autowired
-    private MaintenancePlanRepository maintenancePlanRepository;
 
     @Test
     public void findPlantsNotHiredInLastSixMonthsWithReservationInPastTest() {

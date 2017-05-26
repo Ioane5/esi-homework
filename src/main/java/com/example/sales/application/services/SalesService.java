@@ -15,10 +15,17 @@ import com.example.sales.domain.model.POStatus;
 import com.example.sales.domain.model.PurchaseOrder;
 import com.example.sales.domain.repository.PurchaseOrderRepository;
 import com.example.sales.domain.validation.PurchaseOrderValidator;
+import com.example.sales.integration.InvoicingGateway;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.DataBinder;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,6 +43,11 @@ public class SalesService {
     private PurchaseOrderValidator poValidator;
     @Autowired
     private InvoiceService invoiceService;
+    @Autowired
+    private InvoicingGateway emailSender;
+
+    @Value("${gmail.username}")
+    private String mailUsername;
 
     public PurchaseOrder createPO(Customer customer, String plantId, BusinessPeriod period) throws POValidationException {
         PlantInventoryEntry plant = inventoryService.findPlant(plantId);
@@ -75,12 +87,29 @@ public class SalesService {
         PurchaseOrder po = findPO(id);
         List<POStatus> acceptedStatuses = Arrays.asList(POStatus.PENDING, POStatus.ACCEPTED);
         if (acceptedStatuses.contains(po.getStatus())) {
-            po.cancel();
-            orderRepo.save(po);
-            return po;
+            return orderRepo.save(po.cancel());
         } else {
             throw new POValidationException("Purchase order is already dispatched");
         }
+    }
+
+    public void poEmergencyCancel(PurchaseOrder po) throws MessagingException {
+        if (po == null) {
+            return;
+        }
+        orderRepo.save(po.reject());
+        String id = po.getId();
+        JavaMailSender mailSender = new JavaMailSenderImpl();
+        MimeMessage rootMessage = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(rootMessage, true);
+        helper.setFrom(mailUsername + "@gmail.com");
+        helper.setTo(po.getCustomer().getEmail());
+        helper.setSubject("Emergency cancel of Purchase Order " + id);
+        helper.setText("Dear customer,\n\n" +
+                "We are sorry, but your purchase order was canceled due to maintenance issues.\n\n" +
+                "Kindly yours,\n\n" +
+                "ESI 11 RentIt Team!");
+        emailSender.sendInvoice(rootMessage);
     }
 
     public List<PurchaseOrder> findAllPOs(Customer customer) {
@@ -109,8 +138,7 @@ public class SalesService {
     public PurchaseOrder dispatchPO(String id) throws PurchaseOrderNotFoundException, POValidationException {
         PurchaseOrder po = findPO(id);
         if (po.getStatus() == POStatus.ACCEPTED) {
-            po.dispatch();
-            return orderRepo.save(po);
+            return orderRepo.save(po.dispatch());
         } else {
             throw new POValidationException("Purchase order can not be dispatched");
         }
@@ -119,8 +147,7 @@ public class SalesService {
     public PurchaseOrder acceptDelivery(String id) throws PurchaseOrderNotFoundException, POValidationException {
         PurchaseOrder po = findPO(id);
         if (po.getStatus() == POStatus.PLANT_DISPATCHED) {
-            po.acceptDelivery();
-            return orderRepo.save(po);
+            return orderRepo.save(po.acceptDelivery());
         } else {
             throw new POValidationException("Purchase order is not dispatched yet");
         }
@@ -129,8 +156,7 @@ public class SalesService {
     public PurchaseOrder rejectDelivery(String id) throws PurchaseOrderNotFoundException, POValidationException {
         PurchaseOrder po = findPO(id);
         if (po.getStatus() == POStatus.PLANT_DISPATCHED) {
-            po.rejectDelivery();
-            return orderRepo.save(po);
+            return orderRepo.save(po.rejectDelivery());
         } else {
             throw new POValidationException("Purchase order is not dispatched yet");
         }
@@ -139,9 +165,7 @@ public class SalesService {
     public PurchaseOrder returnPlant(String id) throws PurchaseOrderNotFoundException, POValidationException {
         PurchaseOrder po = findPO(id);
         if (po.getStatus() == POStatus.PLANT_DELIVERED) {
-            po.returnPlant();
-            orderRepo.save(po);
-
+            orderRepo.save(po.returnPlant());
             Invoice invoice = invoiceService.createInvoice(po);
             try {
                 invoiceService.sendInvoice(invoice, po.getCustomer().getEmail());
