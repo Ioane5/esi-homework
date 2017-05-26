@@ -1,0 +1,14 @@
+version: "3"
+services:
+  inventory:
+    image: kopylash/esi11-rentit-sales:v2
+    ports:
+      - "80:8080"
+  maintenance:
+    image: kopylash/esi11-rentit-maintenance:v1
+    ports:
+      - "8090:8090"
+  frontend:
+    image: kopylash/esi11-rentit-frontend:v1
+    ports:
+      - "443:80"
