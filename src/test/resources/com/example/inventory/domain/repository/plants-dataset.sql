@@ -27,8 +27,6 @@ insert into plant_inventory_item (id, plant_info_id, serial_number, equipment_co
 insert into plant_inventory_item (id, plant_info_id, serial_number, equipment_condition) values (12, 5, 'A12', 'UNSERVICEABLE_REPAIRABLE');
 insert into plant_inventory_item (id, plant_info_id, serial_number, equipment_condition) values (13, 6, 'A13', 'UNSERVICEABLE_REPAIRABLE');
 
-insert into maintenance_plan (id, year_of_action) values (1, 2017);
-
 insert into plant_reservation (id, plant_id, start_date, end_date) values (2, 2, '2015-03-22', '2016-03-24');
 insert into plant_reservation (id, plant_id, start_date, end_date) values (3, 3, '2015-03-22', '2016-03-24');
 insert into plant_reservation (id, plant_id, start_date, end_date) values (5, 4, '2009-03-22', '2009-03-24');
