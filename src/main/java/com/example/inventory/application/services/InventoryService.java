@@ -36,8 +36,15 @@ public class InventoryService {
         return inventoryRepo.findAvailablePlants(name, businessPeriod);
     }
 
+    public PlantInventoryEntry findAvailablePlant(String id, BusinessPeriod businessPeriod) {
+        return inventoryRepo.findAvailablePlant(id, businessPeriod);
+    }
+
     public PlantInventoryEntry findPlant(String plantId) {
         return inventoryRepo.findOne(plantId);
+    }
+    public List<PlantInventoryEntry>  findAll() {
+        return inventoryRepo.findAll();
     }
 
     public boolean canChangeReservationPeriod(PlantReservation reservation, BusinessPeriod newPeriod) {
