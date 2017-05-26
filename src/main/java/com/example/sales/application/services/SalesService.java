@@ -94,6 +94,9 @@ public class SalesService {
     }
 
     public void poEmergencyCancel(PurchaseOrder po) throws MessagingException {
+        if (po == null) {
+            return;
+        }
         orderRepo.save(po.reject());
         String id = po.getId();
         JavaMailSender mailSender = new JavaMailSenderImpl();
@@ -103,8 +106,9 @@ public class SalesService {
         helper.setTo(po.getCustomer().getEmail());
         helper.setSubject("Emergency cancel of Purchase Order " + id);
         helper.setText("Dear customer,\n\n" +
-                "We are sorry, but your purchase order was canceled due to maintenance issues" + id + ".\n\n" +
-                "Kindly yours,\n\nESI 11 RentIt Team!");
+                "We are sorry, but your purchase order was canceled due to maintenance issues.\n\n" +
+                "Kindly yours,\n\n" +
+                "ESI 11 RentIt Team!");
         emailSender.sendInvoice(rootMessage);
     }
 
